@@ -9,7 +9,22 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include <vector>
+#include <map>
+#include <string>
+#include <iostream>
+#include <iterator>
+#include <cmath>
+#include <list>
+#include <algorithm>
 
+typedef unsigned int ID;
 
+enum servicetype{LIGHT,MIDDLE,HEAVY};
 
-// TODO: 在此处引用程序需要的其他头文件
+enum VMtype{MEDIUM,LARGE,XLARGE};
+
+enum eventtype{ARRIVAL,DEPARTURE};
+
+using namespace std;
+
