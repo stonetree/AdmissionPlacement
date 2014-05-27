@@ -10,7 +10,8 @@ static const unsigned int sample_request_num = 10000;
 
 extern void initialPhyServers(vector<cServer>& _server_vec);
 extern void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>& _event_multimap);
-extern void getStateValue(multimap<double,cEvent>& _event_multimap,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,map<double,double>& _state_value);
+extern void calculateStateValue(multimap<double,cEvent>& _event_multimap,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,map<double,double>& _state_value);
+extern void insertDepartureEvent(cRequest* _p_request,map<double,cEvent>& _event_multimap);
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -34,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		generateSampleEvent(request_vec,event_multimap);
 
-		getStateValue(event_multimap,request_vec,server_vec,state_value);
+		calculateStateValue(event_multimap,request_vec,server_vec,state_value);
 	}
 
 	return 0;

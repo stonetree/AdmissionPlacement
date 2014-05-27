@@ -9,6 +9,7 @@ class cRequest
 {
 private:
 	ID     id;
+	bool   is_accepted;
 	servicetype service_type;
 	double arrival_rate;
 	double departure_rate;
@@ -23,6 +24,9 @@ public:
 public:
 	void   setID(ID _id){id = _id;}
 	ID     getID(void) const {return id;}
+
+	void   setAccepted(bool _bool){is_accepted = _bool;}
+	bool   getAccepted(void) const {return is_accepted;}
 
 	void setArrivalRate(double _rate){arrival_rate = _rate;}
 	double getArrivalRate(void) const {return arrival_rate;}
@@ -45,7 +49,7 @@ public:
 
 public:
 	cRequest(void);
-	cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,servicetype _service_type,const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map);
+	cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,servicetype _service_type,const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,bool _is_accepted = false);
 	cRequest(const cRequest& _requ);
 	cRequest& operator=(const cRequest& _requ);
 	~cRequest(void);

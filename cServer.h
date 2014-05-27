@@ -25,23 +25,23 @@ public:
 	void setID(ID _id){id = _id;}
 	ID   getID(void) const {return id;}
 
-	void setcpu_capacity(double _capacity){cpu_capacity = _capacity;}
-	double getcpu_capacity(void) const {return cpu_capacity;}
+	void setcpuCapacity(double _capacity){cpu_capacity = _capacity;}
+	double getcpuCapacity(void) const {return cpu_capacity;}
 
-	void setmem_capacity(double _capacity){mem_capacity = _capacity;}
-	double getmem_capacity(void) const {return mem_capacity;}
+	void setmemCapacity(double _capacity){mem_capacity = _capacity;}
+	double getmemCapacity(void) const {return mem_capacity;}
 
-	void setdisk_capacity(double _capacity){disk_capacity = _capacity;}
-	double getdisk_capacity(void) const {return disk_capacity;}
+	void setdiskCapacity(double _capacity){disk_capacity = _capacity;}
+	double getdiskCapacity(void) const {return disk_capacity;}
 
-	void setcpu_residual(double _residual){cpu_residual = _residual;}
-	double getcpu_residual(void) const {return cpu_residual;}
+	void setcpuResidual(double _residual){cpu_residual = _residual;}
+	double getcpuResidual(void) const {return cpu_residual;}
 
-	void setmem_residual(double _residual){mem_residual = _residual;}
-	double getmem_residual(void) const {return mem_residual;}
+	void setmemResidual(double _residual){mem_residual = _residual;}
+	double getmemResidual(void) const {return mem_residual;}
 
-	void setdisk_residual(double _residual){disk_residual = _residual;}
-	double getdisk_residual(void) const {return disk_residual;}
+	void setdiskResidual(double _residual){disk_residual = _residual;}
+	double getdiskResidual(void) const {return disk_residual;}
 
 public:
 	void allocateVirtMach(cVirtualMachine* _vmine);

@@ -59,9 +59,9 @@ void cServer::allocateVirtMach(cVirtualMachine* _vmine)
 {
 	//Allocate VM on this server.
 
-	cpu_residual -= _vmine->getcpu_required();
-	mem_residual -= _vmine->getmem_required();
-	disk_residual -= _vmine->getdisk_required();
+	cpu_residual -= _vmine->getcpuRequired();
+	mem_residual -= _vmine->getmemRequired();
+	disk_residual -= _vmine->getdiskRequired();
 
 	hosted_vm_list.push_back(_vmine);
 	
@@ -82,9 +82,9 @@ void cServer::releaseVirtMach(cVirtualMachine* _vmine)
 		exit(0);
 	}
 	
-	cpu_residual += _vmine->getcpu_required();
-	mem_residual += _vmine->getmem_required();
-	disk_residual += _vmine->getdisk_required();
+	cpu_residual += _vmine->getcpuRequired();
+	mem_residual += _vmine->getmemRequired();
+	disk_residual += _vmine->getdiskRequired();
 
 	hosted_vm_list.erase(iter_vm_list);
 	

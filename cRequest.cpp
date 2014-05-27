@@ -7,9 +7,10 @@ cRequest::cRequest(void)
 }
 
 cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,servicetype _service_type,\
-	const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map)
+	const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,bool _is_accepted)
 {
 	id = _id;
+	is_accepted = _is_accepted;
 	start_time = _start_time;
 	arrival_rate = _lambda;
 	departure_rate = _mu;
@@ -58,6 +59,7 @@ cRequest& cRequest::operator=(const cRequest& _requ)
 	if (this != &_requ)
 	{
 		id = _requ.id;
+		is_accepted = _requ.is_accepted;
 		arrival_rate = _requ.arrival_rate;
 		departure_rate = _requ.departure_rate;
 		start_time = _requ.start_time;
