@@ -3,6 +3,10 @@
 #include "cService.h"
 #include "cEvent.h"
 #include "cRequest.h"
+#include "common.h"
+
+
+static map<requesttype,unsigned int> hosted_requests_type_num;
 
 void iterateStateValue(map<double,double>& _state_value)
 {
@@ -67,15 +71,58 @@ void releaseRequest(cRequest* _p_request)
 	return ;
 }
 
-void calculateStateValue(multimap<double,cEvent>& _event_multimap,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,map<double,double>& _state_value)
+//obtain the optimal action over the action space (e.g.,whether should accept the arriving request or not and which polity should be take such that optimal
+//profit can be obtained)
+bool obtainOptimalAction(multimap<double,cEvent>& _event_multimap,multimap<double,cEvent>::iterator _iter_current,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,vector<pair<placementfunction,int>>& _placement_func_vec,map<double,double>& _state_value)
+{
+	vector<pair<placementfunction,int>>::iterator iter_placement_vec;
+	double max_profit;
+
+	for (iter_placement_vec = _placement_func_vec.begin();iter_placement_vec != _placement_func_vec.end();iter_placement_vec++)
+	{
+		//obtainDeploymentProfits(_server_vec,_request,iter_placement_vec->first);
+	}
+
+	//the arriving will not be accepted
+	return false;
+}
+
+void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,vector<pair<placementfunction,int>>& _placement_func,map<double,double>& _state_value)
 {
 	multimap<double,cEvent>::iterator iter_event_multimap;
+	
+	hosted_requests_type_num.clear();
+	map<requesttype,unsigned int>::iterator iter_find_hosted_request_num_map;
+
 	for (iter_event_multimap = _event_multimap.begin();iter_event_multimap != _event_multimap.end();iter_event_multimap++)
 	{
+		if (iter_event_multimap->second.getEventType() == DEPARTURE)
+		{
+			releaseRequest(iter_event_multimap->second.getRequest());
+		}
+		else
+		{
+			//a request arriving
+			//we should determine which action should be take base on the purpose of maximizing the expected profits
+			if(obtainOptimalAction(_event_multimap,iter_event_multimap,_request_vec,_server_vec,_placement_func,_state_value))
+			{
+				//if the arriving request is accepted, we should allocate physical resources for it and insert a departure event into the event list
+				allocateRequest(iter_event_multimap->second.getRequest());
+				insertDepartureEvent(iter_event_multimap->second.getRequest(),_event_multimap);
 
+				iter_find_hosted_request_num_map = hosted_requests_type_num.find((iter_event_multimap->second.getRequest())->getRequestType());
+				if (iter_find_hosted_request_num_map == hosted_requests_type_num.end())
+				{
+					//there is no request in the system which has the same type as currently arriving request
+					hosted_requests_type_num.insert(make_pair((iter_event_multimap->second.getRequest())->getRequestType(),1));
+				}
+				else
+					(iter_find_hosted_request_num_map->second)++;
+				
+			}
+
+		}
 	}
-	
-	
-	
+
 	return ;
 }

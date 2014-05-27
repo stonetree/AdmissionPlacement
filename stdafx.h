@@ -26,5 +26,7 @@ enum VMtype{MEDIUM,LARGE,XLARGE};
 
 enum eventtype{ARRIVAL,DEPARTURE};
 
+enum requesttype{LOW,HIGHT,XHIGHT};
+
 using namespace std;
 

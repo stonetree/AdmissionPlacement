@@ -14,10 +14,6 @@ private:
 	ID  request_id;
 	cServer* p_hosted_server;
 	cRequest* p_request;
-	//VMtype type;
-	//double cpu_required;
-	//double mem_required;
-	//double disk_required;
 
 
 public:
@@ -35,20 +31,6 @@ public:
 
 	void setRequestPoint(cRequest* _p_request){p_request = _p_request;}
 	cRequest* getRequestPoint(void) const {return p_request;}
-
-	//void setVMType(VMtype _type){type = _type;}
-	//VMtype getVMType(void) {return type;}
-
-	//void setcpu_required(double _required){cpu_required = _required;}
-	//double getcpu_required(void) {return cpu_required;}
-
-	//void setmem_required(double _required){mem_required = _required;}
-	//double getmem_required(void){return mem_required;}
-
-	//void setdisk_required(double _required){disk_required = _required;}
-	//double getdisk_required(void){return disk_required;}
-
-
 
 public:
 	cVirtualMachine(void);

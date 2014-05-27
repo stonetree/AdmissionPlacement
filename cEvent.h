@@ -26,7 +26,7 @@ public:
 	eventtype getEventType(void) const {return event_type;}
 
 	void setRequest(cRequest* _request){request = _request;}
-	cRequest* getRequest(void) const {return request;}
+	cRequest* getRequest(void) {return request;}
 public:
 	cEvent(void);
 	cEvent(ID _id,double _time,eventtype _event_type,ID _requ_id,cRequest* _requ);

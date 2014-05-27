@@ -5,13 +5,9 @@
 #include "cRequest.h"
 #include "cEvent.h"
 #include "cServer.h"
+#include "common.h"
 
 static const unsigned int sample_request_num = 10000;
-
-extern void initialPhyServers(vector<cServer>& _server_vec);
-extern void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>& _event_multimap);
-extern void calculateStateValue(multimap<double,cEvent>& _event_multimap,vector<cRequest>& _request_vec,vector<cServer>& _server_vec,map<double,double>& _state_value);
-extern void insertDepartureEvent(cRequest* _p_request,map<double,cEvent>& _event_multimap);
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -24,18 +20,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	map<double,double> state_value;
 	
 	unsigned int sample_index;
-	for (sample_index = 0;sample_index < sample_request_num; sample_index++)
+	//for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 	{
 		vector<cRequest> request_vec;
 		multimap<double,cEvent> event_multimap;
 
-		//initialServers
+		//initial the set of physical servers
 		vector<cServer> server_vec;
 		initialPhyServers(server_vec);
 
+		//initial the set of policies
+		vector<pair<placementfunction,int>> policy_vec;
+		//initialPolicies(policy_vec);
+
 		generateSampleEvent(request_vec,event_multimap);
 
-		calculateStateValue(event_multimap,request_vec,server_vec,state_value);
+		obtainOptimalStateValue(event_multimap,request_vec,server_vec,policy_vec,state_value);
 	}
 
 	return 0;

@@ -6,8 +6,9 @@ cRequest::cRequest(void)
 {
 }
 
-cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,servicetype _service_type,\
-	const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,bool _is_accepted)
+cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,requesttype _request_type,\
+
+	servicetype _service_type,const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,bool _is_accepted)
 {
 	id = _id;
 	is_accepted = _is_accepted;
@@ -17,6 +18,7 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 	duration_time = _duration_time;
 	departure_time = _departure_time;
 	service_type = _service_type;
+	request_type = _request_type;
 
 	map<VMtype,int>::const_iterator const_iter_vm_type;
 	map<VMtype,cBaseVM>::const_iterator const_find_vm_type;
@@ -66,6 +68,7 @@ cRequest& cRequest::operator=(const cRequest& _requ)
 		duration_time = _requ.duration_time;
 		departure_time = _requ.departure_time;
 		service_type = _requ.service_type;
+		request_type = _requ.request_type;
 
 		vm_vec.clear();
 		vm_vec.assign(_requ.vm_vec.begin(),_requ.vm_vec.end());

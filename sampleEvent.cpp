@@ -4,6 +4,7 @@
 #include "cEvent.h"
 #include "cService.h"
 #include "cVirtualMachine.h"
+#include "common.h"
 
 
 #include "gsl/gsl_rng.h"
@@ -13,25 +14,12 @@
 const unsigned int total_request = 10000;
 const unsigned int total_service_type_num = 3;
 
-//define the parameters w.r.t the coming flows for different service types
-static const double service_light_arrival_rate = 6;
-static const double service_middle_arrival_rate = 3;
-static const double service_heavy_arrival_rate = 1;
-
-static const double service_light_departure_rate = 1.5;
-static const double service_middle_departure_rate = 0.2;
-static const double service_heavy_departure_rate = 0.035;
-
-extern void initialServiceType(map<servicetype,cService*>& _service_map,vector<cService>& _service_vec);
-extern void initialbase_vm_typeType(map<VMtype,cBaseVM>& _base_vm_type_map);
-extern void initialServiceType(map<servicetype,cService*>& _service_map,vector<cService>& _service_vec);
-
 static ID event_id = 1;
 
 /******************************************************************************/
 
 //initial the arrival time for requests with different type of services.
-static int generateArrivalTime(vector<double> _mu_vec,double _request_type_num,multimap<double,servicetype>& _request_arrival_time_multimap)
+static int generateArrivalTime(map<requesttype,pair<double,double>>& _request_type_map,multimap<double,requesttype>& _request_arrival_time_multimap)
 {
   const gsl_rng_type * T;
   gsl_rng * r;
@@ -44,14 +32,14 @@ static int generateArrivalTime(vector<double> _mu_vec,double _request_type_num,m
 
   //vector<vector<double>> randomNum_vvec;
   //vector<vector<double>>::iterator iter_randomNum_vvec ;
-  vector<double>::iterator iter_mu_vec;  
+  map<requesttype,pair<double,double>>::iterator iter_request_type_map;  
   int i,j;
-  int service_type;
+  int request_type;
   
   _request_arrival_time_multimap.clear();
 
   //generate vectors to storage the arrival time for different types of requests corresponding to their arrival rate
-  for (i = 0,service_type = 0,iter_mu_vec = _mu_vec.begin();i < _request_type_num; i++,iter_mu_vec++,service_type++)
+  for (i = 0,request_type = 0,iter_request_type_map = _request_type_map.begin();iter_request_type_map != _request_type_map.end(); i++,iter_request_type_map++,request_type++)
   {
 
 	  interval_time_vec.clear();
@@ -63,21 +51,21 @@ static int generateArrivalTime(vector<double> _mu_vec,double _request_type_num,m
 	  T = gsl_rng_default;
 	  r = gsl_rng_alloc (T);
 
-	  mu = 1/(*iter_mu_vec);
+	  mu = 1/(iter_request_type_map->second.first);
 
 	  double interval_time,next_start_time = 0;
 	  for (j = 0; j < total_request; j++) 
 	  {
 		  interval_time = gsl_ran_exponential(r, mu);
 		  next_start_time += interval_time;
-		  _request_arrival_time_multimap.insert(make_pair(next_start_time,(servicetype)service_type));
+		  _request_arrival_time_multimap.insert(make_pair(next_start_time,(requesttype)request_type));
 	  }
 
 	  gsl_rng_free (r);
   }
 
   i = 0;
-  multimap<double,servicetype>::iterator iter_arrival_time_multimap = _request_arrival_time_multimap.begin();
+  multimap<double,requesttype>::iterator iter_arrival_time_multimap = _request_arrival_time_multimap.begin();
   while (i < total_request)
   {
 	  iter_arrival_time_multimap++;
@@ -90,63 +78,75 @@ static int generateArrivalTime(vector<double> _mu_vec,double _request_type_num,m
   return 0;
 }
 
+servicetype determineServiceType(requesttype _request_type)
+{
+	switch(_request_type){
+	case LOW:
+		return LIGHT;
+	case HIGHT:
+		return MIDDLE;
+	case XHIGHT:
+		return HEAVY;
+	default:
+		cout<<"Error!!!Can not locate the service type\n"<<endl;
+		exit(0);
+	}
+}
+
 //here we will initial a sample path of arriving requests and 
 //generate a sample event
-static void generateSampleRequest(multimap<double,servicetype>& request_arrival_time_multimap,\
+static void generateSampleRequest(const multimap<double,requesttype>& _request_arrival_time_multimap,const map<requesttype,pair<double,double>>& _request_type_map,\
 	const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_type,vector<cRequest>& _request_vec)
 {
-	const gsl_rng_type * T_light,*T_middle,*T_heavy; //corresponding to three types of services
-	gsl_rng * r,*r_light,*r_middle,*r_heavy;
 	static unsigned long int duration_time_seed = 100;
 	ID requ_id = 1;
 	ID eventID = 1;
-	double arrival_rate,departure_rate;
+	double duration_time;
+	servicetype service_type;
+
+	map<requesttype,pair<const gsl_rng_type*,gsl_rng*>> rng_generator_map;
 
 	gsl_rng_env_setup();
-
 	gsl_rng_default_seed = duration_time_seed++;
 
-	T_light = gsl_rng_default;
-	r_light = gsl_rng_alloc(T_light);
-
-	T_middle = gsl_rng_default;
-	r_middle = gsl_rng_alloc(T_middle);
-
-	T_heavy = gsl_rng_default;
-	r_heavy = gsl_rng_alloc(T_heavy);
-
-	double mu;
-
-	multimap<double,servicetype>::iterator iter_request_arrival_time_multipmap = request_arrival_time_multimap.begin();
-
-	double duration_time;
-	for (;iter_request_arrival_time_multipmap != request_arrival_time_multimap.end();iter_request_arrival_time_multipmap++)
+	map<requesttype,pair<double,double>>::const_iterator const_iter_request_type_map;
+	for (const_iter_request_type_map = _request_type_map.begin();const_iter_request_type_map != _request_type_map.end();const_iter_request_type_map++)
 	{
-		switch(iter_request_arrival_time_multipmap->second){
-			case LIGHT:
-				r = r_light;
-				mu = 1/service_light_departure_rate;
-				arrival_rate = service_light_arrival_rate;
-				departure_rate = service_light_departure_rate;
-				break;
-			case MIDDLE:
-				r = r_middle;
-				mu = 1/service_middle_departure_rate;
-				arrival_rate =  service_middle_arrival_rate;
-				departure_rate = service_middle_departure_rate;
-				break;
-			case HEAVY:
-				r = r_heavy;
-				mu =1/service_heavy_departure_rate;
-				arrival_rate = service_heavy_arrival_rate;
-				departure_rate = service_heavy_departure_rate;
-				break;
+		const gsl_rng_type * tem_T;
+		gsl_rng * tem_r;
+
+		tem_T = gsl_rng_default;
+		tem_r = gsl_rng_alloc(tem_T);
+
+		rng_generator_map.insert(make_pair(const_iter_request_type_map->first,make_pair(tem_T,tem_r)));
+	}
+
+	multimap<double,requesttype>::const_iterator const_iter_request_arrival_time_multipmap = _request_arrival_time_multimap.begin();
+	for (;const_iter_request_arrival_time_multipmap != _request_arrival_time_multimap.end();const_iter_request_arrival_time_multipmap++)
+	{
+		map<requesttype,pair<double,double>>::const_iterator const_iter_request_type_map;
+		map<requesttype,pair<const gsl_rng_type*,gsl_rng*>>::iterator const_iter_rng_generator_map;
+
+		const_iter_request_type_map = _request_type_map.find(const_iter_request_arrival_time_multipmap->second);
+		if (const_iter_request_type_map == _request_type_map.end())
+		{
+			cout<<"Error!!!Can not find the corresponding request type!!!\n"<<endl;
+			exit(0);
 		}
 
-		duration_time = gsl_ran_exponential(r,mu);
+		const_iter_rng_generator_map = rng_generator_map.find(const_iter_request_arrival_time_multipmap->second);
+		if (const_iter_rng_generator_map == rng_generator_map.end())
+		{
+			cout<<"Error!!!Can not find the corresponding request type!!!\n"<<endl;
+			exit(0);
+		}
+		
+		service_type = determineServiceType(const_iter_request_arrival_time_multipmap->second);
 
-		_request_vec.push_back(cRequest(requ_id++,arrival_rate,departure_rate,iter_request_arrival_time_multipmap->first,\
-			duration_time,iter_request_arrival_time_multipmap->first + duration_time,iter_request_arrival_time_multipmap->second,_service_type_map,_base_vm_type));	
+		duration_time = gsl_ran_exponential(const_iter_rng_generator_map->second.second,1/const_iter_request_type_map->second.second);
+		
+		_request_vec.push_back(cRequest(requ_id++,const_iter_request_type_map->second.first,const_iter_request_type_map->second.second,const_iter_request_arrival_time_multipmap->first,\
+			duration_time,const_iter_request_arrival_time_multipmap->first + duration_time,const_iter_request_arrival_time_multipmap->second,service_type,_service_type_map,_base_vm_type));	
 	}
 
 	return ;
@@ -182,7 +182,7 @@ static void generateSmapleEventList(vector<cRequest>& _request_vec,multimap<doub
 }
 
 //insert a departure event into the event list if one of requests is accepted.
-void insertDepartureEvent(cRequest* _p_request,map<double,cEvent>& _event_multimap)
+void insertDepartureEvent(cRequest* _p_request,multimap<double,cEvent>& _event_multimap)
 {
 	
 	_event_multimap.insert(make_pair(_p_request->getDepartureTime(),cEvent(event_id,_p_request->getDepartureTime(),DEPARTURE,_p_request->getID(),_p_request)));
@@ -198,32 +198,36 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	_request_vec.clear();
 	_event_multimap.clear();
 
-	//initial the service type
+	//initial the service types
 	map<servicetype,cService*> service_type_map;
 	vector<cService> service_vec;
 	initialServiceType(service_type_map,service_vec);
 	
-	//initial VM type
+	//initial VM types
 	map<VMtype,cBaseVM> base_vm_map;
 	initialbase_vm_typeType(base_vm_map);
+
+	//initial request types
+	map<requesttype,pair<double,double>> request_type_map;
+	initialRequestType(request_type_map);
 
 	//It is used to initialize the set of requests
 	//Since we want to initialize a set of requests with different types of arrival configurations,
 	//we should more carefully think about how to make those requests spread reasonably over the whole simulation time. 
-	multimap<double,servicetype>  request_arrival_time_multimap;
+	multimap<double,requesttype>  request_arrival_time_multimap;
 
-	vector<vector<double>> arrival_time_vvec;
-	vector<vector<double>>::iterator iter_arrival_time_vec;
-	vector<double> arrival_rate_vec;
-	arrival_rate_vec.push_back(service_light_arrival_rate);
-	arrival_rate_vec.push_back(service_middle_arrival_rate);
-	arrival_rate_vec.push_back(service_heavy_arrival_rate);
+	//vector<vector<double>> arrival_time_vvec;
+	//vector<vector<double>>::iterator iter_arrival_time_vec;
+	//vector<double> arrival_rate_vec;
+	//arrival_rate_vec.push_back(service_light_arrival_rate);
+	//arrival_rate_vec.push_back(service_middle_arrival_rate);
+	//arrival_rate_vec.push_back(service_heavy_arrival_rate);
 
 	//initial the arrival time sequence for coming requests
-	generateArrivalTime(arrival_rate_vec,arrival_rate_vec.size(),request_arrival_time_multimap);
+	generateArrivalTime(request_type_map,request_arrival_time_multimap);
 
 	//initial the set of coming requests
-	generateSampleRequest(request_arrival_time_multimap,service_type_map,base_vm_map,_request_vec);
+	generateSampleRequest(request_arrival_time_multimap,request_type_map,service_type_map,base_vm_map,_request_vec);
 
 	//initial the event list
 	generateSmapleEventList(_request_vec,_event_multimap);
