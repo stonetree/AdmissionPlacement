@@ -7,31 +7,31 @@ extern const unsigned int total_service_type_num;
 
 //define the parameters w.r.t the configurations of different types of services in terms of the type and num of VMs required/
 //service type 1 referred as LIGHT here
-const VMtype service_light_vm_type = MEDIUM;
-const int    service_light_vm_num  = 3;
+static const VMtype service_light_vm_type = MEDIUM;
+static const int    service_light_vm_num  = 3;
 
 //service type 2 referred as MIDDLE here
-const VMtype service_middle_vm_type = LARGE;
-const int    service_middle_vm_num = 3;
+static const VMtype service_middle_vm_type = LARGE;
+static const int    service_middle_vm_num = 3;
 
 //service type 3 referred as HEAVY here
-const VMtype service_heavy_vm_type = XLARGE;
-const int    service_heavy_vm_num  = 2;
+static const VMtype service_heavy_vm_type = XLARGE;
+static const int    service_heavy_vm_num  = 2;
 
 //define the reward as well as the penalty per unit time for each type of services
-const double service_light_unit_reward = 0.21;
-const double service_light_unit_penalty = 0.03;
+static const double service_light_unit_reward = 0.21;
+static const double service_light_unit_penalty = 0.03;
 
-const double service_middle_unit_reward = 0.42;
-const double service_middle_unit_penalty = 0.12;
+static const double service_middle_unit_reward = 0.42;
+static const double service_middle_unit_penalty = 0.12;
 
-const double service_heavy_unit_reward = 0.56;
-const double service_heavy_unit_penalty = 0.24;
+static const double service_heavy_unit_reward = 0.56;
+static const double service_heavy_unit_penalty = 0.24;
 
 //define the type and num of VMs corresponding to different type of services
-pair<VMtype,int> serviceLightVM = make_pair(service_light_vm_type,service_light_vm_num);
-pair<VMtype,int> serviceMiddleVM = make_pair(service_middle_vm_type,service_middle_vm_num);
-pair<VMtype,int> serviceHeavyVM = make_pair(service_heavy_vm_type,service_heavy_vm_num);
+static pair<VMtype,int> serviceLightVM = make_pair(service_light_vm_type,service_light_vm_num);
+static pair<VMtype,int> serviceMiddleVM = make_pair(service_middle_vm_type,service_middle_vm_num);
+static pair<VMtype,int> serviceHeavyVM = make_pair(service_heavy_vm_type,service_heavy_vm_num);
 
 //
 void initialServiceType(map<servicetype,cService*>& _service_map,vector<cService>& _service_vec)
