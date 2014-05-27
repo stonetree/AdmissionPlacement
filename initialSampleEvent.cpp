@@ -173,6 +173,7 @@ void generateSmapleEventList(vector<cRequest>& _request_vec,multimap<double,cEve
 		_event_multimap.insert(make_pair(iter_request_vec->getDepartureTime(),cEvent(id,iter_request_vec->getDepartureTime(),DEPARTURE,iter_request_vec->getID(),&(*iter_request_vec))));
 	}
 	
+	id = 1;
 	multimap<double,cEvent>::iterator iter_event_multimap;
 	for (iter_event_multimap = _event_multimap.begin();iter_event_multimap != _event_multimap.end();iter_event_multimap++)
 	{

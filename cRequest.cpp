@@ -21,19 +21,7 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 	map<VMtype,cBaseVM>::const_iterator const_find_vm_type;
 	map<servicetype,cService*>::const_iterator const_find_service_type;
 
-	switch (service_type)
-	{
-	case LIGHT:
-		const_find_service_type = _service_type_map.find(LIGHT);
-		break;
-	case MIDDLE:		
-		const_find_service_type = _service_type_map.find(MIDDLE);
-		break;
-	case HEAVY:
-		const_find_service_type = _service_type_map.find(HEAVY);
-		break;
-	}
-
+	const_find_service_type = _service_type_map.find(service_type);
 	if (const_find_service_type == _service_type_map.end())
 	{
 		
