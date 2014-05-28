@@ -45,7 +45,7 @@ public:
 	double getDepartureTime(void) const {return departure_time;}
 
 	void   serServiceType(servicetype _service_type){service_type = _service_type;}
-	servicetype getRestType(void) const {return service_type;}
+	servicetype getServiceType(void) const {return service_type;}
 
 	void   serRequestType(requesttype _request_type){request_type = _request_type;}
 	requesttype getRequestType(void) const {return request_type;}

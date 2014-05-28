@@ -16,6 +16,13 @@ const unsigned int total_service_type_num = 3;
 
 static ID event_id = 1;
 
+//request types
+map<requesttype,pair<double,double>> request_type_map;
+
+//service types
+map<servicetype,cService*> service_type_map;
+vector<cService> service_vec;
+
 /******************************************************************************/
 
 //initial the arrival time for requests with different type of services.
@@ -78,6 +85,8 @@ static int generateArrivalTime(map<requesttype,pair<double,double>>& _request_ty
   return 0;
 }
 
+//allocate the service type for each type of requests.
+//here we can change the mapping relationship between request types and service types
 servicetype determineServiceType(requesttype _request_type)
 {
 	switch(_request_type){
@@ -199,8 +208,6 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	_event_multimap.clear();
 
 	//initial the service types
-	map<servicetype,cService*> service_type_map;
-	vector<cService> service_vec;
 	initialServiceType(service_type_map,service_vec);
 	
 	//initial VM types
@@ -208,20 +215,12 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	initialbase_vm_typeType(base_vm_map);
 
 	//initial request types
-	map<requesttype,pair<double,double>> request_type_map;
 	initialRequestType(request_type_map);
 
 	//It is used to initialize the set of requests
 	//Since we want to initialize a set of requests with different types of arrival configurations,
 	//we should more carefully think about how to make those requests spread reasonably over the whole simulation time. 
 	multimap<double,requesttype>  request_arrival_time_multimap;
-
-	//vector<vector<double>> arrival_time_vvec;
-	//vector<vector<double>>::iterator iter_arrival_time_vec;
-	//vector<double> arrival_rate_vec;
-	//arrival_rate_vec.push_back(service_light_arrival_rate);
-	//arrival_rate_vec.push_back(service_middle_arrival_rate);
-	//arrival_rate_vec.push_back(service_heavy_arrival_rate);
 
 	//initial the arrival time sequence for coming requests
 	generateArrivalTime(request_type_map,request_arrival_time_multimap);

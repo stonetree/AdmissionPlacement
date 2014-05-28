@@ -6,9 +6,14 @@
 #include "cEvent.h"
 #include "cServer.h"
 #include "common.h"
+#include "cSystemState.h"
 
 static const unsigned int sample_request_num = 10000;
 
+
+vector<pair<string,placementfunction>> policy_vec;
+map<pair<requesttype,double>,double> system_state_value_map;
+map<pair<requesttype,double>,cPolity> system_state_policy_map;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -17,9 +22,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	//for each server, state_index = (cpu_residual+mem_residual+disk_residual) * server_id
 	//for the whole system, state_index = sum the state_index over the all servers.
 	//With this method, we can quickly locate the state and its corresponding value.
-	map<double,double> state_value;
+	system_state_value_map.clear();
+
+	//store the system state visited ever
+	system_state_policy_map.clear();
+
+	//initial the set of policies
+	policy_vec.clear();
+	//initialPolicies(policy_vec);
 	
-	unsigned int sample_index;
+	//unsigned int sample_index;
 	//for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 	{
 		vector<cRequest> request_vec;
@@ -29,13 +41,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		vector<cServer> server_vec;
 		initialPhyServers(server_vec);
 
-		//initial the set of policies
-		vector<pair<placementfunction,int>> policy_vec;
-		//initialPolicies(policy_vec);
+		initialSystemState(server_vec);
+		
 
 		generateSampleEvent(request_vec,event_multimap);
 
-		obtainOptimalStateValue(event_multimap,request_vec,server_vec,policy_vec,state_value);
+
+		obtainOptimalStateValue(event_multimap,server_vec);
 	}
 
 	return 0;

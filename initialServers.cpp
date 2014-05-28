@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "cServer.h"
+#include "common.h"
 
 const unsigned int total_server_num = 50;
 static const double server_cpu_capacity = 50;
@@ -16,4 +17,17 @@ void initialPhyServers(vector<cServer>& _server_vec)
 	}
 	
 	return;
+}
+
+void initialSystemState(vector<cServer>& _server_vec)
+{
+	vector<cServer>::iterator iter_server_vec;
+	system_state.first = NONE;
+	system_state.second = 0;
+
+	for (iter_server_vec = _server_vec.begin(); iter_server_vec != _server_vec.end();iter_server_vec++)
+	{
+		system_state.second += ((iter_server_vec->getcpuResidual() + iter_server_vec->getmemResidual() + iter_server_vec->getdiskResidual()) * iter_server_vec->getID());
+	}
+	return ;
 }

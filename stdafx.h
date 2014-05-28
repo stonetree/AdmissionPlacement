@@ -8,6 +8,7 @@
 #include "targetver.h"
 
 #include <stdio.h>
+#include <string>
 #include <tchar.h>
 #include <vector>
 #include <map>
@@ -26,7 +27,7 @@ enum VMtype{MEDIUM,LARGE,XLARGE};
 
 enum eventtype{ARRIVAL,DEPARTURE};
 
-enum requesttype{LOW,HIGHT,XHIGHT};
+enum requesttype{LOW,HIGHT,XHIGHT,NONE};
 
 using namespace std;
 
