@@ -10,6 +10,9 @@ typedef bool (*placementfunction)(vector<cServer>& _server_vec,cRequest* _reques
 
 extern const unsigned int total_request;
 extern const unsigned int total_service_type_num;
+extern const double discout_factor;
+extern const double value_function_update_factor;
+extern const unsigned int total_server_num;
 
 extern const double discout_factor;
 extern map<requesttype,pair<double,double>> request_type_map;
@@ -17,6 +20,7 @@ extern map<servicetype,cService*> service_type_map;
 extern map<VMtype,cBaseVM> base_vm_map;
 extern vector<cService> service_vec;
 extern pair<requesttype,double> system_state;
+extern double initial_system_state_indicator;
 extern vector<pair<string,placementfunction>> policy_vec;
 extern map<pair<requesttype,double>,double> system_state_value_map;
 extern map<pair<requesttype,double>,cPolity> system_state_policy_map;
@@ -44,6 +48,10 @@ extern void initialbaseVMType(map<VMtype,cBaseVM>& _base_vm_type_map);
 
 extern void initialServiceType(map<servicetype,cService*>& _service_map,vector<cService>& _service_vec);
 
+extern void outputResultes();
+
 extern bool noPlacement(vector<cServer>& _server_vec,cRequest* _request);
 extern bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request);
 extern bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request);
+
+

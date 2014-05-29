@@ -78,7 +78,7 @@ void cServer::releaseVirtMach(cVirtualMachine* _vmine)
 	//If not, maybe some kinds of operations have been carried out.
 	if (iter_vm_list == hosted_vm_list.end())
 	{
-		cout<<"Error!!! Releasing a VM that doesn't exist.\n"<<endl;
+		cout<<"Error!!! Releasing a VM that doesn't exist."<<endl;
 		exit(0);
 	}
 	

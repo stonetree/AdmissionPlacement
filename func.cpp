@@ -6,17 +6,6 @@
 #include "common.h"
 #include "cPolity.h"
 
-const double discout_factor = 0.8;
-const double value_function_update_factor = 0.5;
-
-pair<requesttype,double> system_state;
-
-void iterateStateValue(map<double,double>& _state_value)
-{
-	return;
-}
-
-
 //if the arriving request is accepted,then we should allocate resources to it
 void allocateRequest(cRequest* _p_request)
 {
@@ -44,8 +33,8 @@ bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,pl
 	bool is_accepted;
 	
 	_request->setAccepted(false);
-	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::iterator iter_vm_vec;
+	for (iter_vm_vec = _request->vm_vec.begin();iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
 	{
 		iter_vm_vec->setHostedServID(0);
 		iter_vm_vec->setHostedServPoint(NULL);
@@ -54,7 +43,16 @@ bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,pl
 	is_accepted = (_placement_func_pair.second)(_server_vec,_request);
 	if (!is_accepted && _placement_func_pair.first == "NO_PLACEMENT")
 	{
-		return true;		
+		is_accepted = true;		
+	}
+
+	if (!_request->getAccepted())
+	{
+		for (iter_vm_vec = _request->vm_vec.begin();iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+		{
+			iter_vm_vec->setHostedServID(0);
+			iter_vm_vec->setHostedServPoint(NULL);
+		}
 	}
 
 	return is_accepted;
@@ -213,6 +211,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 				//if the request is intentionally rejected, we just need empty the optimal solution vec;
 				if (!request->getAccepted())
 				{
+					accepted_arriving_request  = false;
 					continue;
 				}
 
@@ -227,8 +226,9 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	}
 
 	//finally find a optimal placement solution
-	if (!optimal_deployment.empty() && name_optimal_policy != "NO_PLACEMENT")
+	if (!optimal_deployment.empty())
 	{			
+
 		request->setAccepted(true);
 		vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
 		vector<cServer*>::iterator iter_optimal_depolyment_vec = optimal_deployment.begin();
@@ -239,6 +239,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		}
 
 		accepted_arriving_request  = true;
+
 	}
 
 	//update state value and corresponding state policy
@@ -259,7 +260,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
 		if (iter_find_system_state_policy_map == system_state_policy_map.end())
 		{
-			cout<<"Error!!!Can not locate the policy for current state!!!\n"<<endl;
+			cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
 			exit(0);
 		}
 
@@ -304,7 +305,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 
 			if (iter_find_request_map == hosted_request_map.end())
 			{
-				cout<<"Error!!!Can not locate the request that should exist in the hosting list!\n"<<endl;
+				cout<<"Error!!!Can not locate the request that should exist in the hosting list!"<<endl;
 				exit(0);
 			}
 
@@ -314,7 +315,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			iter_find_hosted_request_num_map = hosted_requests_type_num_map.find((iter_event_multimap->second.getRequest())->getRequestType());
 			if (iter_find_hosted_request_num_map == hosted_requests_type_num_map.end())
 			{
-				cout<<"Error!!!Can not locate the request that should exist in the counting list of types of the hosting requests!\n"<<endl;
+				cout<<"Error!!!Can not locate the request that should exist in the counting list of types of the hosting requests!"<<endl;
 				exit(0);
 			}
 			else
@@ -362,5 +363,42 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 		}
 	}
 
+	return ;
+}
+
+void outputResultes()
+{
+	ofstream output_file;
+
+	output_file.open("output.txt",ios::app);
+	double state_value;
+
+	map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map;
+	map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map;
+
+	map<requesttype,pair<double,double>>::iterator iter_request_type_map = request_type_map.begin();
+	for (;iter_request_type_map != request_type_map.end();iter_request_type_map++)
+	{
+		state_value = 0;
+		iter_find_system_state_value_map = system_state_value_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		if (iter_find_system_state_value_map != system_state_value_map.end())
+		{
+			state_value = iter_find_system_state_value_map->second;
+		}
+		output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
+
+		iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		if (iter_find_system_state_policy_map != system_state_policy_map.end())
+		{
+			map<string,int>::iterator iter_state_policy = iter_find_system_state_policy_map->second.system_state_policy.begin();
+			for (;iter_state_policy != iter_find_system_state_policy_map->second.system_state_policy.end();iter_state_policy++)
+			{
+				output_file<<iter_state_policy->first<<"--"<<iter_state_policy->second<<endl;
+			}
+		}
+		output_file<<"\n"<<endl;
+	}
+	
+	output_file.close();
 	return ;
 }

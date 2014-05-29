@@ -9,15 +9,16 @@
 
 #include <stdio.h>
 #include <string>
-#include <tchar.h>
 #include <vector>
 #include <map>
+#include <tchar.h>
 #include <string>
 #include <iostream>
 #include <iterator>
 #include <cmath>
 #include <list>
 #include <algorithm>
+#include <fstream>
 
 typedef unsigned int ID;
 

@@ -28,8 +28,8 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 	if (const_find_service_type == _service_type_map.end())
 	{
 		
-		cout<<"It's looking for "<<const_find_service_type->first<<" service type\n"<<endl;
-		cout<<"Error!!! There is no specified service type existed!\n"<<endl;
+		cout<<"It's looking for "<<const_find_service_type->first<<" service type"<<endl;
+		cout<<"Error!!! There is no specified service type existed!"<<endl;
 		exit(0);
 	}
 
@@ -42,8 +42,8 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 			const_find_vm_type = _base_vm_map.find(const_iter_vm_type->first);
 			if (const_find_vm_type == _base_vm_map.end())
 			{
-				cout<<"It's looking for "<<const_iter_vm_type->first<<" vm type\n"<<endl;
-				cout<<"Error!! There is no vm type existing!\n"<<endl;
+				cout<<"It's looking for "<<const_iter_vm_type->first<<" vm type"<<endl;
+				cout<<"Error!! There is no vm type existing!"<<endl;
 				exit(0);
 			}
 			vm_vec.push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));

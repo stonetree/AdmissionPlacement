@@ -9,8 +9,14 @@
 #include "cSystemState.h"
 
 static const unsigned int sample_request_num = 10000;
-const unsigned int total_request = 1000;
+const unsigned int total_request = 100;
+const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
+const double discout_factor = 0.8;
+const double value_function_update_factor = 0.8;
+
+pair<requesttype,double> system_state;
+double initial_system_state_indicator;
 
 
 vector<pair<string,placementfunction>> policy_vec;
@@ -36,7 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//unsigned int sample_index;
 	for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 	{
-		cout<<"The "<<sample_index<<" sample path.\n"<<endl;
+		cout<<"The "<<sample_index<<" sample path"<<endl;
 		vector<cRequest> request_vec;
 		multimap<double,cEvent> event_multimap;
 
@@ -51,6 +57,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		obtainOptimalStateValue(event_multimap,server_vec);
 	}
+
+	outputResultes();
 
 	return 0;
 }

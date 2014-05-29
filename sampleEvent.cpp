@@ -95,7 +95,7 @@ servicetype determineServiceType(requesttype _request_type)
 	case XHIGHT:
 		return HEAVY;
 	default:
-		cout<<"Error!!!Can not locate the service type\n"<<endl;
+		cout<<"Error!!!Can not locate the service type"<<endl;
 		exit(0);
 	}
 }
@@ -137,14 +137,14 @@ static void generateSampleRequest(const multimap<double,requesttype>& _request_a
 		const_iter_request_type_map = _request_type_map.find(const_iter_request_arrival_time_multipmap->second);
 		if (const_iter_request_type_map == _request_type_map.end())
 		{
-			cout<<"Error!!!Can not find the corresponding request type!!!\n"<<endl;
+			cout<<"Error!!!Can not find the corresponding request type!!!"<<endl;
 			exit(0);
 		}
 
 		const_iter_rng_generator_map = rng_generator_map.find(const_iter_request_arrival_time_multipmap->second);
 		if (const_iter_rng_generator_map == rng_generator_map.end())
 		{
-			cout<<"Error!!!Can not find the corresponding request type!!!\n"<<endl;
+			cout<<"Error!!!Can not find the corresponding request type!!!"<<endl;
 			exit(0);
 		}
 		
