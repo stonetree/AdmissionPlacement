@@ -49,7 +49,7 @@ public:
 	
 public:
 	cServer(void);
-	cServer(ID _id,double _cpu_capacity,double _mem_capacity,double _disk_capacity,double _cpu_residual = 0,double _mem_residual = 0,double _disk_residual = 0);
+	cServer(ID _id,double _cpu_capacity,double _mem_capacity,double _disk_capacity);
 	cServer(const cServer& _server);
 	cServer& operator=(const cServer& _server);
 	bool operator==(const cServer& _server);

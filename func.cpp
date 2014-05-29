@@ -86,7 +86,7 @@ double calculateRequestStateIndicator(const cRequest* _request)
 //map the system state into the system state indicator
 //it can be calculated by
 //sum (cpu_residual + mem_residual + disk_residual) * server_id over all servers
-double calculateStateIndicator(const vector<cServer>& _server_vec,cRequest* _p_request)
+double calculateStateIndicator(const vector<cServer>& _server_vec)
 {
 	vector<cServer>::const_iterator const_iter_server_vec;
 	double total_residual = 0;
@@ -97,7 +97,7 @@ double calculateStateIndicator(const vector<cServer>& _server_vec,cRequest* _p_r
 			const_iter_server_vec->getdiskResidual()) * (double)const_iter_server_vec->getID());
 	}
 
-	return total_residual -= calculateRequestStateIndicator(_p_request);
+	return total_residual;
 }
 
 
@@ -182,7 +182,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	map<ID,cRequest*>& _hosted_request_map)
 {
 	vector<pair<string,placementfunction>>::iterator iter_placement_vec;
-	double profit,max_profit = 0;
+	double profit,max_profit = -10000000;
 
 	vector<cServer*> optimal_deployment;
 	string name_optimal_policy;
@@ -211,7 +211,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 				optimal_deployment.clear();
 
 				//if the request is intentionally rejected, we just need empty the optimal solution vec;
-				if (!request->getAccepted())
+				if (name_optimal_policy == "NO_PLACEMENT")
 				{
 					continue;
 				}
@@ -227,7 +227,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	}
 
 	//finally find a optimal placement solution
-	if (!optimal_deployment.empty())
+	if (!optimal_deployment.empty() && name_optimal_policy != "NO_PLACEMENT")
 	{			
 		request->setAccepted(true);
 		vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
@@ -251,6 +251,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		policy.system_state_policy.insert(make_pair(name_optimal_policy,1));
 		system_state_policy_map.insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
 	}
+	else
 	{
 		iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
 
@@ -270,7 +271,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		}
 		else
 		{
-			iter_find_state_policy->second++;
+			(iter_find_state_policy->second)++;
 		}
 	}
 

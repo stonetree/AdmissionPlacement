@@ -11,16 +11,16 @@ cServer::~cServer(void)
 {
 }
 
-cServer::cServer(ID _id,double _cpu_capacity,double _mem_capacity,double _disk_capacity,double _cpu_residual,double _mem_residual,double _disk_residual)
+cServer::cServer(ID _id,double _cpu_capacity,double _mem_capacity,double _disk_capacity)
 {
 	id = _id;
 	cpu_capacity = _cpu_capacity;
 	mem_capacity = _mem_capacity;
 	disk_capacity = _disk_capacity;
 
-	cpu_residual = _cpu_residual;
-	mem_residual = _mem_residual;
-	disk_residual = _disk_residual;
+	cpu_residual = _cpu_capacity;
+	mem_residual = _mem_capacity;
+	disk_residual = _disk_capacity;
 
 }
 

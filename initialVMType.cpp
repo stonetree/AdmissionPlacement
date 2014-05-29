@@ -21,7 +21,7 @@ const double vm_xlarge_disk = 80;
 /**********************************************/
 
 //initial base VM types
-void initialbase_vm_typeType(map<VMtype,cBaseVM>& _base_vm_type_map)
+void initialbaseVMType(map<VMtype,cBaseVM>& _base_vm_type_map)
 {
 	_base_vm_type_map.clear();
 

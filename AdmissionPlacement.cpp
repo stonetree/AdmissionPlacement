@@ -29,10 +29,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//initial the set of policies
 	policy_vec.clear();
-	//initialPolicies(policy_vec);
 	
+	unsigned int sample_index;
 	//unsigned int sample_index;
-	//for (sample_index = 0;sample_index < sample_request_num; sample_index++)
+	for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 	{
 		vector<cRequest> request_vec;
 		multimap<double,cEvent> event_multimap;
@@ -40,7 +40,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		//initial the set of physical servers
 		vector<cServer> server_vec;
 		initialPhyServers(server_vec);
-
 		initialSystemState(server_vec);
 		
 

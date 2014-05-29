@@ -11,7 +11,7 @@
 #include "gsl/gsl_randist.h"
 
 //global variables
-const unsigned int total_request = 10000;
+const unsigned int total_request = 100;
 const unsigned int total_service_type_num = 3;
 
 static ID event_id = 1;
@@ -22,6 +22,7 @@ map<requesttype,pair<double,double>> request_type_map;
 //service types
 map<servicetype,cService*> service_type_map;
 vector<cService> service_vec;
+map<VMtype,cBaseVM> base_vm_map;
 
 /******************************************************************************/
 
@@ -211,11 +212,13 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	initialServiceType(service_type_map,service_vec);
 	
 	//initial VM types
-	map<VMtype,cBaseVM> base_vm_map;
-	initialbase_vm_typeType(base_vm_map);
+	initialbaseVMType(base_vm_map);
 
 	//initial request types
 	initialRequestType(request_type_map);
+
+	//initial optional policies or placement functions
+	initialPolicies();
 
 	//It is used to initialize the set of requests
 	//Since we want to initialize a set of requests with different types of arrival configurations,
