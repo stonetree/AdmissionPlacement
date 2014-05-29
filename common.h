@@ -8,6 +8,9 @@ class cPolity;
 
 typedef bool (*placementfunction)(vector<cServer>& _server_vec,cRequest* _request);
 
+extern const unsigned int total_request;
+extern const unsigned int total_service_type_num;
+
 extern const double discout_factor;
 extern map<requesttype,pair<double,double>> request_type_map;
 extern map<servicetype,cService*> service_type_map;

@@ -211,7 +211,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 				optimal_deployment.clear();
 
 				//if the request is intentionally rejected, we just need empty the optimal solution vec;
-				if (name_optimal_policy == "NO_PLACEMENT")
+				if (!request->getAccepted())
 				{
 					continue;
 				}
@@ -336,6 +336,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
 			{
 				//if the arriving request is accepted, we should allocate physical resources for it and insert a departure event into the event list
+				(iter_event_multimap->second.getRequest())->setAccepted(true);
 				allocateRequest(iter_event_multimap->second.getRequest());
 				insertDepartureEvent(iter_event_multimap->second.getRequest(),_event_multimap);
 
@@ -355,6 +356,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			{
 				//do nothing
 				//the arriving request is rejected due to 1) having not enough residual resources, or 2) the maximizing profits policy
+				(iter_event_multimap->second.getRequest())->setAccepted(false);
 			}
 
 		}

@@ -10,9 +10,6 @@
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
 
-//global variables
-const unsigned int total_request = 100;
-const unsigned int total_service_type_num = 3;
 
 static ID event_id = 1;
 
