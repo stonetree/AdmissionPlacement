@@ -6,6 +6,7 @@
 #include "common.h"
 #include "cPolity.h"
 
+
 //if the arriving request is accepted,then we should allocate resources to it
 void allocateRequest(cRequest* _p_request)
 {
@@ -113,6 +114,22 @@ double getStateValue(requesttype _request_type,double _system_state_indicator)
 	return iter_state_value->second;
 }
 
+double obtainCommuCost(const cRequest* _request)
+{
+	double requ_commu_cost = 0;
+	vector<cVirtualMachine>::const_iterator const_iter_src_vm_vec,const_iter_des_vm_vec;
+	const_iter_src_vm_vec = _request->vm_vec.begin();
+
+	for (;const_iter_src_vm_vec != _request->vm_vec.end();const_iter_src_vm_vec++)
+	{
+		for (const_iter_des_vm_vec = const_iter_src_vm_vec + 1;const_iter_des_vm_vec != _request->vm_vec.end();const_iter_des_vm_vec++)
+		{
+			requ_commu_cost += commu_cost[const_iter_src_vm_vec->getHostedServID() - 1][const_iter_des_vm_vec->getHostedServID() - 1];
+		}
+	}
+
+	return requ_commu_cost;
+}
 
 double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	map<requesttype,unsigned int>& _hosted_requests_type_num_map,\
@@ -165,7 +182,7 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	if (_request->getAccepted())
 	{
 		
-		return state_value + (service_type_map[_request->getServiceType()])->getUnitReward() * _request->getDurationTime();	
+		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
@@ -189,11 +206,14 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 
 	bool accepted_arriving_request = false;
 
+	bool find_solution = false;
+
 
 	for (iter_placement_vec = policy_vec.begin();iter_placement_vec != policy_vec.end();iter_placement_vec++)
 	{
 		if (vmDeployment(_server_vec,request,*iter_placement_vec))
 		{
+			find_solution = true;
 			//the placement func processes correctly
 
 
@@ -242,41 +262,42 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 
 	}
 
-	//update state value and corresponding state policy
-	map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
-	if (iter_find_system_state_value_map == system_state_value_map.end())
+	if (find_solution)
 	{
-		//insert the info of current system state
-		system_state_value_map.insert(make_pair(make_pair(system_state.first,system_state.second),max_profit));
-		cPolity policy;
-		policy.system_state_policy.insert(make_pair(name_optimal_policy,1));
-		system_state_policy_map.insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
-	}
-	else
-	{
-		iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
-
-
-		map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
-		if (iter_find_system_state_policy_map == system_state_policy_map.end())
+		//update state value and corresponding state policy
+		map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
+		if (iter_find_system_state_value_map == system_state_value_map.end())
 		{
-			cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
-			exit(0);
-		}
-
-		map<string,int>::iterator iter_find_state_policy;
-		iter_find_state_policy = iter_find_system_state_policy_map->second.system_state_policy.find(name_optimal_policy);
-		if (iter_find_state_policy == iter_find_system_state_policy_map->second.system_state_policy.end())
-		{
-			iter_find_system_state_policy_map->second.system_state_policy.insert(make_pair(name_optimal_policy,1));
+			//insert the info of current system state
+			system_state_value_map.insert(make_pair(make_pair(system_state.first,system_state.second),max_profit));
+			cPolity policy;
+			policy.system_state_policy.insert(make_pair(name_optimal_policy,1));
+			system_state_policy_map.insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
 		}
 		else
 		{
-			(iter_find_state_policy->second)++;
+			iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
+
+
+			map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
+			if (iter_find_system_state_policy_map == system_state_policy_map.end())
+			{
+				cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
+				exit(0);
+			}
+
+			map<string,int>::iterator iter_find_state_policy;
+			iter_find_state_policy = iter_find_system_state_policy_map->second.system_state_policy.find(name_optimal_policy);
+			if (iter_find_state_policy == iter_find_system_state_policy_map->second.system_state_policy.end())
+			{
+				iter_find_system_state_policy_map->second.system_state_policy.insert(make_pair(name_optimal_policy,1));
+			}
+			else
+			{
+				(iter_find_state_policy->second)++;
+			}
 		}
 	}
-
-	
 	
 	system_state.second -= calculateRequestStateIndicator(request);
 
@@ -287,6 +308,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cServer>& _server_vec)
 {
 	multimap<double,cEvent>::iterator iter_event_multimap;
+	int counting = 0;
 
 	//store the number of accepted requests corresponding to each type of requests
 	map<requesttype,unsigned int> hosted_requests_type_num_map;
@@ -298,6 +320,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 	
 	for (iter_event_multimap = _event_multimap.begin();iter_event_multimap != _event_multimap.end();iter_event_multimap++)
 	{		
+		counting++;
 		if (iter_event_multimap->second.getEventType() == DEPARTURE)
 		{
 			//delete the request from the hosting list
@@ -334,12 +357,15 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			system_state.first = (iter_event_multimap->second.getRequest())->getRequestType();
 
 			//we should determine which action should be take base on the purpose of maximizing the expected profits
-			if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
+			//if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
+            if(obtainOptimalActionBasicFunc(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
+
 			{
 				//if the arriving request is accepted, we should allocate physical resources for it and insert a departure event into the event list
 				(iter_event_multimap->second.getRequest())->setAccepted(true);
 				allocateRequest(iter_event_multimap->second.getRequest());
 				insertDepartureEvent(iter_event_multimap->second.getRequest(),_event_multimap);
+				accepted_requests_num++;
 
 				hosted_request_map.insert(make_pair((iter_event_multimap->second.getRequest())->getID(),iter_event_multimap->second.getRequest()));
 
@@ -366,7 +392,50 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 	return ;
 }
 
-void outputResultes()
+
+void initialCommuCost(const vector<cServer>& _server_vec)
+{
+	vector<cServer>::const_iterator const_iter_src_server_vec,const_iter_des_server_vec;
+	div_t tem_src,tem_des;
+	ID src_server_id,des_server_id;
+	for (const_iter_src_server_vec = _server_vec.begin();const_iter_src_server_vec != _server_vec.end();const_iter_src_server_vec++)
+	{
+		vector<double> commu_cost_vec;
+		for (const_iter_des_server_vec = _server_vec.begin();const_iter_des_server_vec != _server_vec.end();const_iter_des_server_vec++)
+		{
+			src_server_id = const_iter_src_server_vec->getID() - 1;
+			des_server_id = const_iter_des_server_vec->getID() - 1;
+
+			tem_src = div(src_server_id,5);
+			tem_des = div(des_server_id,5);
+
+			if (tem_src.quot == tem_des.quot)
+			{
+				if (tem_src.rem == tem_des.rem)
+				{
+					//It's the communication cost on local server
+					commu_cost_vec.push_back(local_communication_cost);
+				}
+				else
+				{
+					//It's the communication cost between two servers that locate on different servers connected to the same tor
+					commu_cost_vec.push_back(tor_communication_cost);
+				}
+			}
+			else
+			{
+				//It's the communication cost between two servers that locate on different tor
+				commu_cost_vec.push_back(remote_communication_cost);
+			}
+		}
+
+		commu_cost.push_back(commu_cost_vec);
+	}
+	
+	return ;
+}
+
+void outputResults()
 {
 	ofstream output_file;
 
@@ -398,6 +467,8 @@ void outputResultes()
 		}
 		output_file<<"\n"<<endl;
 	}
+	output_file<<"The average number of accepted requests is "<<accepted_requests_num/(total_request * sample_request_num)<<endl;
+	output_file<<"\n"<<endl;
 	
 	output_file.close();
 	return ;

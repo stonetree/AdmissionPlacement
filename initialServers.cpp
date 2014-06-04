@@ -3,7 +3,7 @@
 #include "common.h"
 
 
-static const double server_cpu_capacity = 50;
+static const double server_cpu_capacity = 54;
 static const double server_mem_capacity = 80;
 static const double server_disk_capacity = 500;
 

@@ -20,13 +20,13 @@ static const int    service_heavy_vm_num  = 2;
 
 //define the reward as well as the penalty per unit time for each type of services
 static const double service_light_unit_reward = 0.21;
-static const double service_light_unit_penalty = 0.03;
+static const double service_light_unit_penalty = 0.1;
 
 static const double service_middle_unit_reward = 0.42;
-static const double service_middle_unit_penalty = 0.12;
+static const double service_middle_unit_penalty = 0.2;
 
 static const double service_heavy_unit_reward = 0.56;
-static const double service_heavy_unit_penalty = 0.24;
+static const double service_heavy_unit_penalty = 0.28;
 
 //define the type and num of VMs corresponding to different type of services
 static pair<VMtype,int> serviceLightVM = make_pair(service_light_vm_type,service_light_vm_num);

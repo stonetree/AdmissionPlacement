@@ -49,7 +49,7 @@ bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request)
 		mem_residual = reverse_iter_server_index_multimap->second->getmemResidual();
 		disk_residual = reverse_iter_server_index_multimap->second->getdiskResidual();
 
-		if(enoughResource(cpu_residual,mem_residual,disk_residual,reverse_iter_vm_index_multimap->second))
+		while(enoughResource(cpu_residual,mem_residual,disk_residual,reverse_iter_vm_index_multimap->second))
 		{
 			cpu_residual -= reverse_iter_vm_index_multimap->second->getcpuRequired();
 			mem_residual -= reverse_iter_vm_index_multimap->second->getmemRequired();

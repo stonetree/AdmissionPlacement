@@ -48,10 +48,10 @@ static int generateArrivalTime(map<requesttype,pair<double,double>>& _request_ty
   {
 
 	  interval_time_vec.clear();
+	  
+	  gsl_rng_env_setup();
 
 	  gsl_rng_default_seed = interval_timeSeed++;
-
-	  gsl_rng_env_setup();
 
 	  T = gsl_rng_default;
 	  r = gsl_rng_alloc (T);
