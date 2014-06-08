@@ -6,7 +6,7 @@
 #include "common.h"
 #include "cPolity.h"
 
-const double step_size = 0.2;
+const double step_size = 0.6;
 
 map<string,int> policy_counting;//for basis function use only
 
@@ -17,6 +17,8 @@ void initialBasisFuncParameters(const vector<cServer>& _server_vec)
 	{
 		basisFuncParameter.push_back(0);
 	}
+
+	basisFuncParameter.push_back(0);
 	return;
 }
 
@@ -25,19 +27,18 @@ static double getRequestStateValue(const cRequest* _request)
 	double state_value = 0;
 	vector<cVirtualMachine>::const_iterator const_iter_vm = _request->vm_vec.begin();
 	double cpu_capacity,mem_capacity,disk_capacity;
+
+	if (_request->getAccepted() == false)
+	{
+		return 0;
+	}
+
 	for (;const_iter_vm != _request->vm_vec.end();const_iter_vm++)
 	{
-		if (const_iter_vm->getHostedServID() == 0)
-		{
-			return 0;
-		}
-		else
-		{
 			cpu_capacity = const_iter_vm->getHostedServerPoint()->getcpuCapacity();
 			mem_capacity = const_iter_vm->getHostedServerPoint()->getmemCapacity();
 			disk_capacity = const_iter_vm->getHostedServerPoint()->getdiskCapacity();
 			state_value += const_iter_vm->getcpuRequired()/cpu_capacity * const_iter_vm->getmemRequired()/mem_capacity * const_iter_vm->getdiskRequired()/disk_capacity * basisFuncParameter[const_iter_vm->getHostedServID() - 1];
-		}
 	}	
 	return state_value;
 }
@@ -102,13 +103,11 @@ double obtainDeploymentProfitsBasisFunc(vector<cServer>& _server_vec,cRequest* _
 	
 	if (_request->getAccepted())
 	{
-		(service_type_map[_request->getServiceType()])->getUnitReward()	;
-		obtainCommuCost(_request);
-		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() - obtainCommuCost(_request)) * _request->getDurationTime();	
+		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
-		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty() * _request->getDurationTime();
+		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->vm_vec.size() * _request->getDurationTime();
 	}
 }
 
@@ -162,6 +161,7 @@ bool obtainOptimalActionBasicFunc(cEvent* _event,vector<cServer>& _server_vec,
 				for (;iter_vm_vec != request->vm_vec.end();iter_vm_vec++)
 				{
 					optimal_deployment.push_back(iter_vm_vec->getHostedServerPoint());
+					
 				}
 
 			}
@@ -244,7 +244,7 @@ void outputResultsBasisFunct()
 	}
 
 	output_file<<"The average number of accepted requests is "<<accepted_requests_num/(total_request * sample_request_num)<<endl;
-	output_file<<"\n"<<endl;
+	output_file<<"\n\n"<<endl;
 
 	output_file.close();
 	return ;

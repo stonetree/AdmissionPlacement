@@ -182,11 +182,11 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	if (_request->getAccepted())
 	{
 		
-		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() - obtainCommuCost(_request)) * _request->getDurationTime();	
+		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
-		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty() * _request->getDurationTime();
+		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->vm_vec.size() * _request->getDurationTime();
 	}
 }
 
@@ -265,6 +265,11 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	if (find_solution)
 	{
 		//update state value and corresponding state policy
+		if (request->getAccepted() == false)
+		{
+			system_state.first = NONE;
+		}
+
 		map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
 		if (iter_find_system_state_value_map == system_state_value_map.end())
 		{
@@ -358,7 +363,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 
 			//we should determine which action should be take base on the purpose of maximizing the expected profits
 			//if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
-            if(obtainOptimalActionBasicFunc(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
+            if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
 
 			{
 				//if the arriving request is accepted, we should allocate physical resources for it and insert a departure event into the event list
@@ -468,7 +473,7 @@ void outputResults()
 		output_file<<"\n"<<endl;
 	}
 	output_file<<"The average number of accepted requests is "<<accepted_requests_num/(total_request * sample_request_num)<<endl;
-	output_file<<"\n"<<endl;
+	output_file<<"\n\n"<<endl;
 	
 	output_file.close();
 	return ;

@@ -133,9 +133,9 @@ void initialPolicies()
 	policy.second = noPlacement;
 	policy_vec.push_back(policy);
 
-	policy.first = "GREEDY";
-	policy.second = greedyVMPlacement;
-	policy_vec.push_back(policy);
+	//policy.first = "GREEDY";
+	//policy.second = greedyVMPlacement;
+	//policy_vec.push_back(policy);
 
 	policy.first = "BALANCE";
 	policy.second = balanceVMPlacement;

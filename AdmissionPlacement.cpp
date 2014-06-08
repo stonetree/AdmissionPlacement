@@ -8,7 +8,7 @@
 #include "common.h"
 #include "cSystemState.h"
 
-const unsigned int sample_request_num = 500;
+const unsigned int sample_request_num = 10000;
 const unsigned int total_request = 1000;
 const unsigned int total_server_num = 50;
 const unsigned int total_service_type_num = 3;
@@ -80,9 +80,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	}
 
-	//outputResults();
+	outputResults();
 
-	outputResultsBasisFunct();
+	//outputResultsBasisFunct();
 
 	return 0;
 }
