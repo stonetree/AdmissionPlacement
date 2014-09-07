@@ -13,6 +13,9 @@
 
 static ID event_id = 1;
 
+//the average profits over all sample paths if all requests are accepted.
+double average_profits = 0;
+
 //request types
 map<requesttype,pair<double,double>> request_type_map;
 
@@ -155,6 +158,14 @@ static void generateSampleRequest(const multimap<double,requesttype>& _request_a
 		_request_vec.push_back(cRequest(requ_id++,const_iter_request_type_map->second.first,const_iter_request_type_map->second.second,const_iter_request_arrival_time_multipmap->first,\
 			duration_time,const_iter_request_arrival_time_multipmap->first + duration_time,const_iter_request_arrival_time_multipmap->second,service_type,_service_type_map,_base_vm_type));	
 	}
+
+	//vector<cRequest>::iterator iter_request = _request_vec.begin();
+	//for (;iter_request != _request_vec.end();iter_request++)
+	//{
+	//	average_profits += ((service_type_map[iter_request->getServiceType()])->getUnitReward() * iter_request->vm_vec.size()) * iter_request->getDurationTime();
+	//}
+
+	//cout<<"The average profits is "<<average_profits / (sample_index + 1)<<endl;
 
 	return ;
 }

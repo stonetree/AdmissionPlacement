@@ -3,9 +3,9 @@
 #include "common.h"
 
 
-static const double server_cpu_capacity = 54;
-static const double server_mem_capacity = 80;
-static const double server_disk_capacity = 500;
+static const double server_cpu_capacity = 10;
+static const double server_mem_capacity = 0;
+static const double server_disk_capacity = 0;
 
 void initialPhyServers(vector<cServer>& _server_vec)
 {
@@ -25,12 +25,12 @@ void initialSystemState(vector<cServer>& _server_vec)
 	system_state.first = NONE;
 	system_state.second = 0;
 
-	for (iter_server_vec = _server_vec.begin(); iter_server_vec != _server_vec.end();iter_server_vec++)
-	{
-		system_state.second += ((iter_server_vec->getcpuResidual() + iter_server_vec->getmemResidual() + iter_server_vec->getdiskResidual()) * iter_server_vec->getID());
-	}
+	//for (iter_server_vec = _server_vec.begin(); iter_server_vec != _server_vec.end();iter_server_vec++)
+	//{
+	//	system_state.second += ((iter_server_vec->getcpuResidual() + iter_server_vec->getmemResidual() + iter_server_vec->getdiskResidual()) * iter_server_vec->getID());
+	//}
 	
-	initial_system_state_indicator = system_state.second;
+	initial_system_state_indicator = calculateStateIndicator(_server_vec);
 
 	return ;
 }

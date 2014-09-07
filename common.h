@@ -6,7 +6,11 @@
 
 class cPolity;
 
-typedef bool (*placementfunction)(vector<cServer>& _server_vec,cRequest* _request);
+typedef bool (*placementfunction)(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
+
+extern double low_arrival_rate;
+extern double hight_arrival_rate;
+extern double xhight_arrival_rate;
 
 extern const unsigned int total_request;
 extern const unsigned int total_service_type_num;
@@ -33,7 +37,7 @@ extern double initial_system_state_indicator;
 extern vector<pair<string,placementfunction>> policy_vec;
 extern map<pair<requesttype,double>,double> system_state_value_map;
 extern map<pair<requesttype,double>,cPolity> system_state_policy_map;
-extern double sample_index;
+extern unsigned int sample_index;
 
 extern void insertDepartureEvent(cRequest* _p_request,multimap<double,cEvent>& _event_multimap);
 
@@ -60,17 +64,19 @@ extern void initialServiceType(map<servicetype,cService*>& _service_map,vector<c
 
 extern void initialCommuCost(const vector<cServer>& _server_vec);
 
-extern bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,placementfunction>& _placement_func_pair);
+extern bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,placementfunction>& _placement_func_pair, int* _iterationPlacement);
 
 extern double obtainCommuCost(const cRequest* _request);
 
-extern double calculateRequestStateIndicator(const cRequest* _request);
+extern double calculateRequestStateIndicator(const vector<cServer>& _server_vec,const cRequest* _request);
+extern double calculateStateIndicator(const vector<cServer>& _server_vec);
 
 extern void outputResults();
 
-extern bool noPlacement(vector<cServer>& _server_vec,cRequest* _request);
-extern bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request);
-extern bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request);
+extern bool noPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
+extern bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
+extern bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
+extern bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
 
 //for basis function use only
 extern bool obtainOptimalActionBasicFunc(cEvent* _event,vector<cServer>& _server_vec,

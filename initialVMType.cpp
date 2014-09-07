@@ -4,19 +4,19 @@
 
 //define the parameter w.r.t the configurations of different types of VMs in terms of the num of resources specified.
 //VM referred as MEDIUM
-const double vm_medium_cpu = 3;
-const double vm_medium_mem = 3.75;
-const double vm_medium_disk = 4;
+const double vm_medium_cpu = 2;
+const double vm_medium_mem = 0;
+const double vm_medium_disk = 0;
 
 //VM referred as LARGE
-const double vm_large_cpu = 6.5;
-const double vm_large_mem = 7.5;
-const double vm_large_disk = 32;
+const double vm_large_cpu = 5;
+const double vm_large_mem = 0;
+const double vm_large_disk = 0;
 
 //VM referred as XLARGE
-const double vm_xlarge_cpu = 13;
-const double vm_xlarge_mem = 15;
-const double vm_xlarge_disk = 80;
+const double vm_xlarge_cpu = 8;
+const double vm_xlarge_mem = 0;
+const double vm_xlarge_disk = 0;
 
 /**********************************************/
 

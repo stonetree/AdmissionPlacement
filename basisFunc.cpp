@@ -130,10 +130,10 @@ bool obtainOptimalActionBasicFunc(cEvent* _event,vector<cServer>& _server_vec,
 
 	bool find_solution = false;
 
-
+	int iteration_placement = 0;
 	for (iter_placement_vec = policy_vec.begin();iter_placement_vec != policy_vec.end();iter_placement_vec++)
 	{
-		if (vmDeployment(_server_vec,request,*iter_placement_vec))
+		if (vmDeployment(_server_vec,request,*iter_placement_vec,&iteration_placement))
 		{
 			find_solution = true;
 			//the placement func processes correctly

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
 //define the parameters w.r.t the coming flows for different service types
-static const double low_arrival_rate = 4;
-static const double hight_arrival_rate = 4;
-static const double xhight_arrival_rate = 2;
+double low_arrival_rate = 4;
+double hight_arrival_rate = 4;
+double xhight_arrival_rate = 2;
 
-static const double low_departure_rate = 0.08;
-static const double hight_departure_rate = 0.065;
-static const double xhight_departure_rate = 0.05;
+static const double low_departure_rate = 4;
+static const double hight_departure_rate = 4;
+static const double xhight_departure_rate = 2;
 
 void initialRequestType(map<requesttype,pair<double,double>>& _request_type_map)
 {

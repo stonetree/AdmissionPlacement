@@ -8,12 +8,12 @@
 #include "common.h"
 #include "cSystemState.h"
 
-const unsigned int sample_request_num = 10000;
-const unsigned int total_request = 1000;
-const unsigned int total_server_num = 50;
+const unsigned int sample_request_num = 100000;
+const unsigned int total_request = 100;
+const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
-const double discout_factor = 0.8;
-const double value_function_update_factor = 0.8;
+const double discout_factor = 0.997;
+const double value_function_update_factor = 0.9;
 
 const double local_communication_cost = 0.03;
 const double tor_communication_cost = 0.05;
@@ -27,12 +27,13 @@ double initial_system_state_indicator;
 
 double average_accepted_requests_num = 0;
 double accepted_requests_num = 0;
-double sample_index = 0;
 
 
 vector<pair<string,placementfunction>> policy_vec;
 map<pair<requesttype,double>,double> system_state_value_map;
 map<pair<requesttype,double>,cPolity> system_state_policy_map;
+
+unsigned int sample_index = 0;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -49,7 +50,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//initial the set of policies
 	policy_vec.clear();
 	
-	unsigned int sample_index;
 	//unsigned int sample_index;
 	for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 	{
@@ -66,15 +66,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (sample_index == 0)
 		{
 			initialCommuCost(server_vec);
-			initialBasisFuncParameters(server_vec);
+			//initialBasisFuncParameters(server_vec);
 		}
 
 		initialSystemState(server_vec);
 
-		
-
 		generateSampleEvent(request_vec,event_multimap);
-
 
 		obtainOptimalStateValue(event_multimap,server_vec);
 
