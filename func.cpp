@@ -5,7 +5,10 @@
 #include "cRequest.h"
 #include "common.h"
 #include "cPolity.h"
+#include "cConfiguration.h"
 
+unsigned int policy_indicator = 0;
+int counting = 0;
 
 //if the arriving request is accepted,then we should allocate resources to it
 void allocateRequest(cRequest* _p_request)
@@ -59,18 +62,18 @@ bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,pl
 	return is_accepted;
 }
 
-double BKDRHash(const vector<cServer>& _server_vec,const cRequest* _request)
+unsigned long int BKDRHash(const vector<cServer>& _server_vec,const cRequest* _request)
 {
 	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
-	double hash = 0;
+	unsigned long int hash = 0;
 
-	vector<double> state_cpu_residual;
-	vector<double> state_mem_residual;
-	vector<double> state_disk_residual;
+	vector<unsigned long int> state_cpu_residual;
+	vector<unsigned long int> state_mem_residual;
+	vector<unsigned long int> state_disk_residual;
 
-	vector<double>::iterator iter_stat_cpu_residual;
-	vector<double>::iterator iter_state_mem_residual;
-	vector<double>::iterator iter_stat_disk_residual;
+	vector<unsigned long int>::iterator iter_stat_cpu_residual;
+	vector<unsigned long int>::iterator iter_state_mem_residual;
+	vector<unsigned long int>::iterator iter_stat_disk_residual;
 
 	vector<cServer>::const_iterator iter_server_vec = _server_vec.begin();
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
@@ -95,32 +98,32 @@ double BKDRHash(const vector<cServer>& _server_vec,const cRequest* _request)
 	}
 	
 
-	for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
-	{
-		hash = hash * seed + *iter_state_mem_residual;
-	}
+	//for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
+	//{
+	//	hash = hash * seed + *iter_state_mem_residual;
+	//}
 
-	for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
-	{
-		hash = hash * seed + *iter_stat_disk_residual;
-	}
+	//for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
+	//{
+	//	hash = hash * seed + *iter_stat_disk_residual;
+	//}
 	
 
 	return hash;
 }
 
-double BKDRHash(const vector<cServer>& _server_vec)
+unsigned long int BKDRHash(const vector<cServer>& _server_vec)
 {
 	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
-	double hash = 0;
+	unsigned long int hash = 0;
 
-	vector<double> state_cpu_residual;
-	vector<double> state_mem_residual;
-	vector<double> state_disk_residual;
+	vector<unsigned long int> state_cpu_residual;
+	vector<unsigned long int> state_mem_residual;
+	vector<unsigned long int> state_disk_residual;
 
-	vector<double>::iterator iter_stat_cpu_residual;
-	vector<double>::iterator iter_state_mem_residual;
-	vector<double>::iterator iter_stat_disk_residual;
+	vector<unsigned long int>::iterator iter_stat_cpu_residual;
+	vector<unsigned long int>::iterator iter_state_mem_residual;
+	vector<unsigned long int>::iterator iter_stat_disk_residual;
 
 	vector<cServer>::const_iterator iter_server_vec = _server_vec.begin();
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
@@ -137,32 +140,32 @@ double BKDRHash(const vector<cServer>& _server_vec)
 	}
 
 
-	for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
-	{
-		hash = hash * seed + *iter_state_mem_residual;
-	}
+	//for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
+	//{
+	//	hash = hash * seed + *iter_state_mem_residual;
+	//}
 
-	for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
-	{
-		hash = hash * seed + *iter_stat_disk_residual;
-	}
+	//for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
+	//{
+	//	hash = hash * seed + *iter_stat_disk_residual;
+	//}
 
 
 	return hash;
 }
 
-double BKDRHashDeparture(const vector<cServer>& _server_vec,const cRequest* _request)
+unsigned long int BKDRHashDeparture(const vector<cServer>& _server_vec,const cRequest* _request)
 {
 	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
-	double hash = 0;
+	unsigned long int hash = 0;
 
-	vector<double> state_cpu_residual;
-	vector<double> state_mem_residual;
-	vector<double> state_disk_residual;
+	vector<unsigned long int> state_cpu_residual;
+	vector<unsigned long int> state_mem_residual;
+	vector<unsigned long int> state_disk_residual;
 
-	vector<double>::iterator iter_stat_cpu_residual;
-	vector<double>::iterator iter_state_mem_residual;
-	vector<double>::iterator iter_stat_disk_residual;
+	vector<unsigned long int>::iterator iter_stat_cpu_residual;
+	vector<unsigned long int>::iterator iter_state_mem_residual;
+	vector<unsigned long int>::iterator iter_stat_disk_residual;
 
 	vector<cServer>::const_iterator iter_server_vec = _server_vec.begin();
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
@@ -187,32 +190,32 @@ double BKDRHashDeparture(const vector<cServer>& _server_vec,const cRequest* _req
 	}
 
 
-	for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
-	{
-		hash = hash * seed + *iter_state_mem_residual;
-	}
+	//for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
+	//{
+	//	hash = hash * seed + *iter_state_mem_residual;
+	//}
 
-	for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
-	{
-		hash = hash * seed + *iter_stat_disk_residual;
-	}
+	//for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
+	//{
+	//	hash = hash * seed + *iter_stat_disk_residual;
+	//}
 
 
 	return hash;
 }
 
-double BKDRHashArriDepar(const vector<cServer>& _server_vec,const cRequest* _curr_arrive_requ,const cRequest* _pontential_depar_requ)
+unsigned long int BKDRHashArriDepar(const vector<cServer>& _server_vec,const cRequest* _curr_arrive_requ,const cRequest* _pontential_depar_requ)
 {
 	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
-	double hash = 0;
+	unsigned long int hash = 0;
 
-	vector<double> state_cpu_residual;
-	vector<double> state_mem_residual;
-	vector<double> state_disk_residual;
+	vector<unsigned long int> state_cpu_residual;
+	vector<unsigned long int> state_mem_residual;
+	vector<unsigned long int> state_disk_residual;
 
-	vector<double>::iterator iter_stat_cpu_residual;
-	vector<double>::iterator iter_state_mem_residual;
-	vector<double>::iterator iter_stat_disk_residual;
+	vector<unsigned long int>::iterator iter_stat_cpu_residual;
+	vector<unsigned long int>::iterator iter_state_mem_residual;
+	vector<unsigned long int>::iterator iter_stat_disk_residual;
 
 	vector<cServer>::const_iterator iter_server_vec = _server_vec.begin();
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
@@ -245,21 +248,21 @@ double BKDRHashArriDepar(const vector<cServer>& _server_vec,const cRequest* _cur
 	}
 
 
-	for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
-	{
-		hash = hash * seed + *iter_state_mem_residual;
-	}
+	//for(iter_state_mem_residual = state_mem_residual.begin();iter_state_mem_residual != state_mem_residual.end();iter_state_mem_residual++)
+	//{
+	//	hash = hash * seed + *iter_state_mem_residual;
+	//}
 
-	for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
-	{
-		hash = hash * seed + *iter_stat_disk_residual;
-	}
+	//for (iter_stat_disk_residual = state_disk_residual.begin();iter_stat_disk_residual != state_disk_residual.end();iter_stat_disk_residual++)
+	//{
+	//	hash = hash * seed + *iter_stat_disk_residual;
+	//}
 
 
 	return hash;
 }
 
-double calculateRequestStateIndicator(const vector<cServer>& _server_vec,const cRequest* _request)
+unsigned long int calculateRequestStateIndicator(const vector<cServer>& _server_vec,const cRequest* _request)
 {
 	vector<cServer>::const_iterator const_iter_server_vec;
 	double total_residual = 0;
@@ -285,7 +288,7 @@ double calculateRequestStateIndicator(const vector<cServer>& _server_vec,const c
 	//return total_residual;
 }
 
-double calculateRequestDepartureStateIndicator(const vector<cServer>& _server_vec,const cRequest* _request)
+unsigned long int calculateRequestDepartureStateIndicator(const vector<cServer>& _server_vec,const cRequest* _request)
 {
 
 	return BKDRHashDeparture(_server_vec,_request);
@@ -304,13 +307,13 @@ double calculateRequestDepartureStateIndicator(const vector<cServer>& _server_ve
 //map the system state into the system state indicator
 //it can be calculated by
 //sum (cpu_residual + mem_residual + disk_residual) * server_id over all servers
-double calculateStateIndicator(const vector<cServer>& _server_vec)
+unsigned long int calculateStateIndicator(const vector<cServer>& _server_vec)
 {
 
 	return BKDRHash(_server_vec);
 }
 
-double calcPotentialRequDeparStateIndicator(const vector<cServer>& _server_vec,const cRequest* _curr_arrive_requ,const cRequest* _pontential_depar_requ)
+unsigned long int calcPotentialRequDeparStateIndicator(const vector<cServer>& _server_vec,const cRequest* _curr_arrive_requ,const cRequest* _pontential_depar_requ)
 {
 	if (_curr_arrive_requ->getAccepted())
 	{
@@ -337,9 +340,9 @@ double calcPotentialRequDeparStateIndicator(const vector<cServer>& _server_vec,c
 //}
 
 
-double getStateValue(requesttype _request_type,double _system_state_indicator)
+double getStateValue(requesttype _request_type,unsigned long int _system_state_indicator)
 {
-	map<pair<requesttype,double>,double>::iterator iter_state_value;
+	map<pair<requesttype,unsigned long int>,double>::iterator iter_state_value;
 
 	iter_state_value = system_state_value_map.find(make_pair(_request_type,_system_state_indicator));
 
@@ -377,7 +380,7 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
  	* here the continue Markov chain will be calculated *
  	*****************************************************/
 
-	double current_system_state_hash;
+	unsigned long int current_system_state_hash;
 	if (system_state.first == NONE)
 	{
 		//Currently this statement doesn't work.
@@ -418,7 +421,7 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	map<ID,cRequest*>::iterator iter_hosted_request_map = _hosted_request_map.begin();
 	for (;iter_hosted_request_map != _hosted_request_map.end();iter_hosted_request_map++)
 	{
-		double temp_stat_indicator = calcPotentialRequDeparStateIndicator(_server_vec,_request,iter_hosted_request_map->second);
+		unsigned long int temp_stat_indicator = calcPotentialRequDeparStateIndicator(_server_vec,_request,iter_hosted_request_map->second);
 		state_value += request_type_map[iter_hosted_request_map->second->getRequestType()].second / total_transition_rate * getStateValue(NONE,temp_stat_indicator);
 	}
 	
@@ -475,7 +478,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 				//save the placement solution
 				max_profit = profit;
 				name_optimal_policy = iter_placement_vec->first;
-				hash_optimal_placement = hash_current_placement;
+				//hash_optimal_placement = hash_current_placement;
 				optimal_deployment.clear();
 
 				//if the request is intentionally rejected, we just need empty the optimal solution vec;
@@ -539,9 +542,10 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		//}
 
 		//set the global system state variable, or system_state
+
 		system_state.second = calculateStateIndicator(_server_vec);
 
-		map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
+		map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
 		if (iter_find_system_state_value_map == system_state_value_map.end())
 		{
 			//insert the info of current system state
@@ -555,7 +559,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 			iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
 
 
-			map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
+			map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
 			if (iter_find_system_state_policy_map == system_state_policy_map.end())
 			{
 				cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
@@ -582,7 +586,7 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,cRequest*>& _hosted_request_map,const map<requesttype,unsigned int>& _hosted_requests_type_num_map)
 {
 	//calculate the value for "NONE" state
-	double current_system_state_hash;
+	unsigned long int current_system_state_hash;
 	if (system_state.first == NONE)
 	{
 		//Currently this statement doesn't work.
@@ -611,7 +615,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 	//calculate the expected value 
 	//firstly, iterate the possible request arrival event
 	double state_value = 0;
-	map<pair<requesttype,double>,double>::iterator iter_find_state_value;
+	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_state_value;
 	iter_request_type = request_type_map.begin();
 	for (;iter_request_type != request_type_map.end();iter_request_type++)
 	{		
@@ -623,7 +627,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 	map<ID,cRequest*>::const_iterator iter_hosted_request_map = _hosted_request_map.begin();
 	for (;iter_hosted_request_map != _hosted_request_map.end();iter_hosted_request_map++)
 	{
-		double temp_stat_indicator = calculateRequestDepartureStateIndicator(_server_vec,iter_hosted_request_map->second);
+		unsigned long int temp_stat_indicator = calculateRequestDepartureStateIndicator(_server_vec,iter_hosted_request_map->second);
 		state_value += request_type_map[iter_hosted_request_map->second->getRequestType()].second / total_transition_rate * getStateValue(NONE,temp_stat_indicator);
 	}
 
@@ -631,7 +635,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 
 
 	//update state value and corresponding state policy
-	map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
+	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
 	if (iter_find_system_state_value_map == system_state_value_map.end())
 	{
 		//insert the info of current system state
@@ -648,7 +652,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cServer>& _server_vec)
 {
 	multimap<double,cEvent>::iterator iter_event_multimap;
-	int counting = 0;
+	counting = 0;
 
 	//store the number of accepted requests corresponding to each type of requests
 	map<requesttype,unsigned int> hosted_requests_type_num_map;
@@ -726,6 +730,10 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 				//do nothing
 				//the arriving request is rejected due to 1) having not enough residual resources, or 2) maximizing profits policy
 				(iter_event_multimap->second.getRequest())->setAccepted(false);
+
+				//update the value of current system state after any request departure
+				system_state.first = NONE;
+				updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
 			}
 
 		}
@@ -784,8 +792,10 @@ void outputResults()
 	output_file.open("output.txt",ios::app);
 	double state_value;
 
-	map<pair<requesttype,double>,double>::iterator iter_find_system_state_value_map;
-	map<pair<requesttype,double>,cPolity>::iterator iter_find_system_state_policy_map;
+	output_file<<"The workload is "<<workload_rate<<"The policy is "<<policy_indicator<<endl;
+
+	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map;
+	map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map;
 
 	map<requesttype,pair<double,double>>::iterator iter_request_type_map = request_type_map.begin();
 	for (;iter_request_type_map != request_type_map.end();iter_request_type_map++)
@@ -809,9 +819,54 @@ void outputResults()
 		}
 		output_file<<"\n"<<endl;
 	}
-	output_file<<"The average number of accepted requests is "<<accepted_requests_num/(total_request * sample_request_num)<<endl;
+
+	output_file<<"The average number of accepted requests is "<<average_accepted_rate/sample_request_num<<endl;
 	output_file<<"\n\n"<<endl;
 	
 	output_file.close();
 	return ;
+}
+
+bool initialInputfile(vector<cConfiguration>& _config_vec)
+{
+	ifstream inputFile("input.txt");
+
+	_config_vec.clear();
+
+	char workload[20];
+	char low_rate[20];
+	char high_rate[20];
+	char xhigh_rate[20];
+	char policy[20];
+
+
+	char buf[101];
+
+	if (!inputFile)
+	{
+		cout<<"Unable to open input file!"<<endl;
+		return false;
+	}
+
+	while(!inputFile.eof())
+	{
+		inputFile.getline(buf,100,'\n');
+		sscanf(buf,"%s %s %s %s %s\n",workload, low_rate,high_rate,xhigh_rate,policy);
+		_config_vec.push_back(cConfiguration(atof(workload),atof(low_rate),atof(high_rate),atof(xhigh_rate),atof(policy)));
+	}
+
+	return true;
+}
+
+void initialInputParameter(vector<cConfiguration>::iterator _iter_config_vec)
+{
+
+	workload_rate = _iter_config_vec->getWorkLoadRate();
+	low_arrival_rate = _iter_config_vec->getLowArrivalRate();
+	hight_arrival_rate = _iter_config_vec->getHighArrivalRate();
+	xhight_arrival_rate = _iter_config_vec->getXhighArrivalRate();
+
+	policy_indicator = _iter_config_vec->getPolicy();
+	initialPolicies(policy_indicator);	
+	return;
 }

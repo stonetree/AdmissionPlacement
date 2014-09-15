@@ -11,7 +11,9 @@
 #include "gsl/gsl_randist.h"
 
 
-static ID event_id = 1;
+ID event_id = 1;
+unsigned long int interval_timeSeed = 10;
+unsigned long int duration_time_seed = 100;
 
 //the average profits over all sample paths if all requests are accepted.
 double average_profits = 0;
@@ -31,7 +33,6 @@ static int generateArrivalTime(map<requesttype,pair<double,double>>& _request_ty
 {
   const gsl_rng_type * T;
   gsl_rng * r;
-  static unsigned long int interval_timeSeed = 10;
 
   vector<double> interval_time_vec;
   vector<double>::iterator iter_interval_time_vec;
@@ -108,7 +109,6 @@ servicetype determineServiceType(requesttype _request_type)
 static void generateSampleRequest(const multimap<double,requesttype>& _request_arrival_time_multimap,const map<requesttype,pair<double,double>>& _request_type_map,\
 	const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_type,vector<cRequest>& _request_vec)
 {
-	static unsigned long int duration_time_seed = 100;
 	ID requ_id = 1;
 	ID eventID = 1;
 	double duration_time;
@@ -203,7 +203,7 @@ static void generateSmapleEventList(vector<cRequest>& _request_vec,multimap<doub
 void insertDepartureEvent(cRequest* _p_request,multimap<double,cEvent>& _event_multimap)
 {
 	
-	_event_multimap.insert(make_pair(_p_request->getDepartureTime(),cEvent(event_id,_p_request->getDepartureTime(),DEPARTURE,_p_request->getID(),_p_request)));
+	_event_multimap.insert(make_pair(_p_request->getDepartureTime(),cEvent(event_id++,_p_request->getDepartureTime(),DEPARTURE,_p_request->getID(),_p_request)));
 	
 	return ;
 }
@@ -226,7 +226,7 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	initialRequestType(request_type_map);
 
 	//initial optional policies or placement functions
-	initialPolicies();
+	//initialPolicies();
 
 	//It is used to initialize the set of requests
 	//Since we want to initialize a set of requests with different types of arrival configurations,

@@ -8,7 +8,7 @@
 #include "common.h"
 #include "cSystemState.h"
 
-const unsigned int sample_request_num = 100000;
+const unsigned int sample_request_num = 100;
 const unsigned int total_request = 100;
 const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
@@ -22,16 +22,18 @@ const double remote_communication_cost = 0.1;
 vector<vector<double>> commu_cost;
 vector<double> basisFuncParameter;
 
-pair<requesttype,double> system_state;
-double initial_system_state_indicator;
+pair<requesttype,unsigned long int> system_state;
+unsigned long int initial_system_state_indicator = 0;
 
-double average_accepted_requests_num = 0;
+double average_accepted_rate = 0;
 double accepted_requests_num = 0;
+
+double workload_rate = 0;
 
 
 vector<pair<string,placementfunction>> policy_vec;
-map<pair<requesttype,double>,double> system_state_value_map;
-map<pair<requesttype,double>,cPolity> system_state_policy_map;
+map<pair<requesttype,unsigned long int>,double> system_state_value_map;
+map<pair<requesttype,unsigned long int>,cPolity> system_state_policy_map;
 
 unsigned int sample_index = 0;
 
@@ -42,45 +44,73 @@ int _tmain(int argc, _TCHAR* argv[])
 	//for each server, state_index = (cpu_residual+mem_residual+disk_residual) * server_id
 	//for the whole system, state_index = sum the state_index over the all servers.
 	//With this method, we can quickly locate the state and its corresponding value.
-	system_state_value_map.clear();
-
-	//store the system state visited ever
-	system_state_policy_map.clear();
-
-	//initial the set of policies
-	policy_vec.clear();
 	
-	//unsigned int sample_index;
-	for (sample_index = 0;sample_index < sample_request_num; sample_index++)
+	
+	vector<cConfiguration> config_vec;
+
+	initialInputfile(config_vec);
+
+	vector<cConfiguration>::iterator iter_config_vec = config_vec.begin();
+	for (;iter_config_vec != config_vec.end();iter_config_vec++)
 	{
-		average_accepted_requests_num = 0;
+		
+		//reset the seed of random number generator for generating arrival times
+		interval_timeSeed = 10;
 
-		cout<<"The "<<sample_index<<" sample path"<<endl;
-		vector<cRequest> request_vec;
-		multimap<double,cEvent> event_multimap;
+		//reset the seed of random number generator for generating duration times
+		duration_time_seed = 100;
 
-		//initial the set of physical servers
-		vector<cServer> server_vec;
-		initialPhyServers(server_vec);
+		//reset the system state value
+		system_state_value_map.clear();
 
-		if (sample_index == 0)
+
+		//store the system state visited ever
+		system_state_policy_map.clear();
+
+		//initial the set of policies
+		policy_vec.clear();
+
+		//initial the input parameters
+		initialInputParameter(iter_config_vec);
+
+		average_accepted_rate = 0;
+
+		//unsigned int sample_index;
+		for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 		{
-			initialCommuCost(server_vec);
-			//initialBasisFuncParameters(server_vec);
-		}
+			accepted_requests_num = 0;
 
-		initialSystemState(server_vec);
+			cout<<"The "<<sample_index<<" sample path"<<endl;
+			vector<cRequest> request_vec;
+			multimap<double,cEvent> event_multimap;
 
-		generateSampleEvent(request_vec,event_multimap);
+			//initial the set of physical servers
+			vector<cServer> server_vec;
+			initialPhyServers(server_vec);
 
-		obtainOptimalStateValue(event_multimap,server_vec);
+			if (iter_config_vec == config_vec.begin() && sample_index == 0)
+			{
+				initialCommuCost(server_vec);
+				//initialBasisFuncParameters(server_vec);
+			}
 
-	}
+			initialSystemState(server_vec);
 
-	outputResults();
+			generateSampleEvent(request_vec,event_multimap);
 
-	//outputResultsBasisFunct();
+			obtainOptimalStateValue(event_multimap,server_vec);
 
+			//reset the event indicator
+			event_id = 1;
+			
+			average_accepted_rate += accepted_requests_num/total_request;
+
+		}//end...for (sample_index...)
+
+		outputResults();
+		
+		//outputResultsBasisFunct();
+	}//end...for (iter_config_vec)
 	return 0;
 }
 

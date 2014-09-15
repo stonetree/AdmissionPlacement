@@ -392,21 +392,100 @@ void initialPolicies()
 	policy_vec.clear();
 
 	pair<string,placementfunction> policy;
-	//policy.first = "NO_PLACEMENT";
-	//policy.second = noPlacement;
-	//policy_vec.push_back(policy);
+	policy.first = "NO_PLACEMENT";
+	policy.second = noPlacement;
+	policy_vec.push_back(policy);
 
-	//policy.first = "GREEDY";
-	//policy.second = greedyVMPlacement;
-	//policy_vec.push_back(policy);
+	policy.first = "GREEDY";
+	policy.second = greedyVMPlacement;
+	policy_vec.push_back(policy);
 
 	policy.first = "BALANCE";
 	policy.second = balanceVMPlacement;
 	policy_vec.push_back(policy);
 
-	//policy.first = "OPTIMAL";
-	//policy.second = optimalVMPlacement;
-	//policy_vec.push_back(policy);
+	policy.first = "OPTIMAL";
+	policy.second = optimalVMPlacement;
+	policy_vec.push_back(policy);
 
 	return;
 }
+
+void initialPolicies(unsigned int _conf_policy)
+{
+	/*********************************************
+	10 -- LOAD_BALANCE;
+    11 -- LOAD_BALANCE + NO_PLACEMENT;
+	20 -- GREEDY;
+    21 -- GREEDY + NO_PLACEMENT; 
+	30 -- OPTIMAL;
+	31 -- OPTIMAL + NO_PLACEMENT;
+	40 -- LOAD_BALANCE + GREEDY;
+	41 -- LOAD_BALANCE + GREEDY + NO_PLACEMENT;
+	*********************************************/
+	policy_vec.clear();
+
+	pair<string,placementfunction> policy;
+
+	div_t t = div(_conf_policy,10);
+		
+	if (t.quot == 1)
+	{
+		policy.first = "BALANCE";
+		policy.second = balanceVMPlacement;
+		policy_vec.push_back(policy);
+		
+		if (t.rem == 1)
+		{
+			policy.first = "NO_PLACEMENT";
+			policy.second = noPlacement;
+			policy_vec.push_back(policy);
+		}
+	}
+	else if (t.quot == 2)
+	{
+		policy.first = "GREEDY";
+		policy.second = greedyVMPlacement;
+		policy_vec.push_back(policy);
+
+		if (t.rem == 1)
+		{
+			policy.first = "NO_PLACEMENT";
+			policy.second = noPlacement;
+			policy_vec.push_back(policy);
+		}
+	}
+	else if (t.quot == 3)
+	{
+		policy.first = "OPTIMAL";
+		policy.second = optimalVMPlacement;
+		policy_vec.push_back(policy);
+
+		if (t.rem == 1)
+		{
+			policy.first = "NO_PLACEMENT";
+			policy.second = noPlacement;
+			policy_vec.push_back(policy);
+		}
+	}
+	else if (t.quot == 4)
+	{
+		policy.first = "GREEDY";
+		policy.second = greedyVMPlacement;
+		policy_vec.push_back(policy);
+
+		policy.first = "BALANCE";
+		policy.second = balanceVMPlacement;
+		policy_vec.push_back(policy);
+
+		if (t.rem == 1)
+		{
+			policy.first = "NO_PLACEMENT";
+			policy.second = noPlacement;
+			policy_vec.push_back(policy);
+		}
+	}
+
+	return;
+}
+
