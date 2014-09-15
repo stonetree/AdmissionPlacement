@@ -61,13 +61,15 @@ bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _ite
 	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
 	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
 	{
-		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
+		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
+		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
 	}
 	
 	//taking the order for servers
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
 	{
-		server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
+		server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual(),&(*iter_server_vec)));
+		//server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
 	}
 
 	multimap<double,cServer*>::reverse_iterator reverse_iter_server_index_multimap = server_index_multimap.rbegin();
@@ -118,13 +120,15 @@ bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
 	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
 	{
-		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
+		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
+		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
 	}
 
 	//taking the order for servers
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
 	{
-		server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
+		server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual(),&(*iter_server_vec)));
+		//server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
 	}
 
 	multimap<double,cServer*>::iterator iter_server_index_multimap = server_index_multimap.begin();
