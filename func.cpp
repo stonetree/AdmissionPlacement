@@ -8,7 +8,7 @@
 #include "cConfiguration.h"
 
 unsigned int policy_indicator = 0;
-int counting = 0;
+int counting = -1;
 
 //if the arriving request is accepted,then we should allocate resources to it
 void allocateRequest(cRequest* _p_request)
@@ -344,9 +344,12 @@ double getStateValue(requesttype _request_type,unsigned long int _system_state_i
 {
 	map<pair<requesttype,unsigned long int>,double>::iterator iter_state_value;
 
-	iter_state_value = system_state_value_map.find(make_pair(_request_type,_system_state_indicator));
+	//iter_state_value = system_state_value_map.find(make_pair(_request_type,_system_state_indicator));
+	
+	iter_state_value = global_point_system_value_map[counting + 1].find(make_pair(_request_type,_system_state_indicator));
 
-	if (iter_state_value == system_state_value_map.end())
+	//if (iter_state_value == system_state_value_map.end())
+    if (iter_state_value == global_point_system_value_map[counting + 1].end())
 	{
 		return 0;
 	}
@@ -381,9 +384,9 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
  	*****************************************************/
 
 	unsigned long int current_system_state_hash;
+
 	if (system_state.first == NONE)
 	{
-		//Currently this statement doesn't work.
 		current_system_state_hash = calculateStateIndicator(_server_vec);
 	}
 	else
@@ -536,31 +539,32 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	{
 		//update state value and corresponding state policy
 		
-		//if (request->getAccepted() == false)
-		//{
-		//	system_state.first = NONE;
-		//}
+		if (request->getAccepted() == false)
+		{
+			system_state.first = NONE;
+		}
 
 		//set the global system state variable, or system_state
 
 		system_state.second = calculateStateIndicator(_server_vec);
 
-		map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
-		if (iter_find_system_state_value_map == system_state_value_map.end())
+		map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = global_point_system_value_map[counting].find(make_pair(system_state.first,system_state.second));
+		//map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
+		if (iter_find_system_state_value_map == global_point_system_value_map[counting].end())
 		{
 			//insert the info of current system state
-			system_state_value_map.insert(make_pair(make_pair(system_state.first,system_state.second),max_profit));
+			global_point_system_value_map[counting].insert(make_pair(make_pair(system_state.first,system_state.second),max_profit));
 			cPolity policy;
 			policy.system_state_policy.insert(make_pair(name_optimal_policy,1));
-			system_state_policy_map.insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
+			global_point_system_policy_map[counting].insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
 		}
 		else
 		{
 			iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
 
 
-			map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(system_state.first,system_state.second));
-			if (iter_find_system_state_policy_map == system_state_policy_map.end())
+			map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map = global_point_system_policy_map[counting].find(make_pair(system_state.first,system_state.second));
+			if (iter_find_system_state_policy_map == global_point_system_policy_map[counting].end())
 			{
 				cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
 				exit(0);
@@ -652,7 +656,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cServer>& _server_vec)
 {
 	multimap<double,cEvent>::iterator iter_event_multimap;
-	counting = 0;
+	counting = -1;
 
 	//store the number of accepted requests corresponding to each type of requests
 	map<requesttype,unsigned int> hosted_requests_type_num_map;
@@ -664,7 +668,6 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 	
 	for (iter_event_multimap = _event_multimap.begin();iter_event_multimap != _event_multimap.end();iter_event_multimap++)
 	{		
-		counting++;
 		if (iter_event_multimap->second.getEventType() == DEPARTURE)
 		{
 			//delete the request from the hosting list
@@ -693,13 +696,14 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 
 
 			//update the value of current system state after any request departure
-			system_state.first = NONE;
-			updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
+			//system_state.first = NONE;
+			//updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
 			//system_state.second = calculateRequestDepartureStateIndicator(_server_vec,iter_event_multimap->second.getRequest());
 		}
 		else
 		{
 			//a request is arriving
+			counting++;
 			//update the system state
 			system_state.first = (iter_event_multimap->second.getRequest())->getRequestType();
 
@@ -732,8 +736,8 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 				(iter_event_multimap->second.getRequest())->setAccepted(false);
 
 				//update the value of current system state after any request departure
-				system_state.first = NONE;
-				updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
+				//system_state.first = NONE;
+				//updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
 			}
 
 		}
@@ -801,15 +805,17 @@ void outputResults()
 	for (;iter_request_type_map != request_type_map.end();iter_request_type_map++)
 	{
 		state_value = 0;
-		iter_find_system_state_value_map = system_state_value_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
-		if (iter_find_system_state_value_map != system_state_value_map.end())
+		iter_find_system_state_value_map = global_point_system_value_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		//iter_find_system_state_value_map = system_state_value_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		if (iter_find_system_state_value_map != global_point_system_value_map[0].end())
 		{
 			state_value = iter_find_system_state_value_map->second;
 		}
 		output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
 
-		iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
-		if (iter_find_system_state_policy_map != system_state_policy_map.end())
+		iter_find_system_state_policy_map = global_point_system_policy_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		//iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		if (iter_find_system_state_policy_map != global_point_system_policy_map[0].end())
 		{
 			map<string,int>::iterator iter_state_policy = iter_find_system_state_policy_map->second.system_state_policy.begin();
 			for (;iter_state_policy != iter_find_system_state_policy_map->second.system_state_policy.end();iter_state_policy++)

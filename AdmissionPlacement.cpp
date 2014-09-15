@@ -8,11 +8,11 @@
 #include "common.h"
 #include "cSystemState.h"
 
-const unsigned int sample_request_num = 100;
+const unsigned int sample_request_num = 10000;
 const unsigned int total_request = 100;
 const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
-const double discout_factor = 0.997;
+const double discout_factor = 0.999;
 const double value_function_update_factor = 0.9;
 
 const double local_communication_cost = 0.03;
@@ -32,8 +32,12 @@ double workload_rate = 0;
 
 
 vector<pair<string,placementfunction>> policy_vec;
-map<pair<requesttype,unsigned long int>,double> system_state_value_map;
-map<pair<requesttype,unsigned long int>,cPolity> system_state_policy_map;
+
+system_value_map system_state_value_map;
+system_policy_map system_state_policy_map;
+
+system_value_map  *global_point_system_value_map = NULL;
+system_policy_map *global_point_system_policy_map = NULL;
 
 unsigned int sample_index = 0;
 
@@ -63,7 +67,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		//reset the system state value
 		system_state_value_map.clear();
 
-
 		//store the system state visited ever
 		system_state_policy_map.clear();
 
@@ -74,6 +77,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		initialInputParameter(iter_config_vec);
 
 		average_accepted_rate = 0;
+		
+		system_value_map  *p_system_value_map = new system_value_map[total_request + 1];
+		system_policy_map *p_system_policy_map = new system_policy_map[total_request + 1];
+
+		global_point_system_value_map = p_system_value_map;
+		global_point_system_policy_map = p_system_policy_map;
 
 		//unsigned int sample_index;
 		for (sample_index = 0;sample_index < sample_request_num; sample_index++)
@@ -81,33 +90,46 @@ int _tmain(int argc, _TCHAR* argv[])
 			accepted_requests_num = 0;
 
 			cout<<"The "<<sample_index<<" sample path"<<endl;
-			vector<cRequest> request_vec;
-			multimap<double,cEvent> event_multimap;
+
+			//initial request sequence
+			//vector<cRequest> request_vec;
+			vector<cRequest> *p_request_vec = new vector<cRequest>;
+
+			multimap<double,cEvent> *p_event_multimap = new multimap<double,cEvent>;
+			//multimap<double,cEvent> event_multimap;
 
 			//initial the set of physical servers
-			vector<cServer> server_vec;
-			initialPhyServers(server_vec);
+			vector<cServer> *p_server_vec = new vector<cServer>;
+			//vector<cServer> server_vec;
+			initialPhyServers(*p_server_vec);
 
 			if (iter_config_vec == config_vec.begin() && sample_index == 0)
 			{
-				initialCommuCost(server_vec);
+				initialCommuCost(*p_server_vec);
 				//initialBasisFuncParameters(server_vec);
 			}
 
-			initialSystemState(server_vec);
+			initialSystemState(*p_server_vec);
 
-			generateSampleEvent(request_vec,event_multimap);
+			generateSampleEvent(*p_request_vec,*p_event_multimap);
 
-			obtainOptimalStateValue(event_multimap,server_vec);
+			obtainOptimalStateValue(*p_event_multimap,*p_server_vec);
 
 			//reset the event indicator
 			event_id = 1;
 			
 			average_accepted_rate += accepted_requests_num/total_request;
 
+			delete p_request_vec;
+			delete p_server_vec;
+			delete p_event_multimap;
+
 		}//end...for (sample_index...)
 
 		outputResults();
+
+		delete[] p_system_policy_map;
+		delete[] p_system_value_map;
 		
 		//outputResultsBasisFunct();
 	}//end...for (iter_config_vec)

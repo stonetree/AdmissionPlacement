@@ -8,6 +8,8 @@
 class cPolity;
 
 typedef bool (*placementfunction)(vector<cServer>& _server_vec,cRequest* _request,int* _iterationPlacement);
+typedef map<pair<requesttype,unsigned long int>,double> system_value_map;
+typedef map<pair<requesttype,unsigned long int>,cPolity> system_policy_map;
 
 extern double low_arrival_rate;
 extern double hight_arrival_rate;
@@ -24,6 +26,9 @@ extern const unsigned int sample_request_num;
 extern double workload_rate;
 
 extern ID event_id;
+
+extern system_value_map  *global_point_system_value_map;
+extern system_policy_map *global_point_system_policy_map;
 
 extern vector<vector<double>> commu_cost;
 extern vector<double> basisFuncParameter;
