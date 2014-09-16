@@ -25,7 +25,7 @@ void initialBasisFuncParameters(const vector<cServer>& _server_vec)
 static double getRequestStateValue(const cRequest* _request)
 {
 	double state_value = 0;
-	vector<cVirtualMachine>::const_iterator const_iter_vm = _request->vm_vec.begin();
+	vector<cVirtualMachine>::const_iterator const_iter_vm = _request->p_vm_vec->begin();
 	double cpu_capacity,mem_capacity,disk_capacity;
 
 	if (_request->getAccepted() == false)
@@ -33,7 +33,7 @@ static double getRequestStateValue(const cRequest* _request)
 		return 0;
 	}
 
-	for (;const_iter_vm != _request->vm_vec.end();const_iter_vm++)
+	for (;const_iter_vm != _request->p_vm_vec->end();const_iter_vm++)
 	{
 			cpu_capacity = const_iter_vm->getHostedServerPoint()->getcpuCapacity();
 			mem_capacity = const_iter_vm->getHostedServerPoint()->getmemCapacity();
@@ -103,11 +103,11 @@ double obtainDeploymentProfitsBasisFunc(vector<cServer>& _server_vec,cRequest* _
 	
 	if (_request->getAccepted())
 	{
-		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size() - obtainCommuCost(_request)) * _request->getDurationTime();	
+		return state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->p_vm_vec->size() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
-		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->vm_vec.size() * _request->getDurationTime();
+		return state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->p_vm_vec->size() * _request->getDurationTime();
 	}
 }
 
@@ -157,8 +157,8 @@ bool obtainOptimalActionBasicFunc(cEvent* _event,vector<cServer>& _server_vec,
 					continue;
 				}
 
-				vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
-				for (;iter_vm_vec != request->vm_vec.end();iter_vm_vec++)
+				vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
+				for (;iter_vm_vec != request->p_vm_vec->end();iter_vm_vec++)
 				{
 					optimal_deployment.push_back(iter_vm_vec->getHostedServerPoint());
 					
@@ -173,9 +173,9 @@ bool obtainOptimalActionBasicFunc(cEvent* _event,vector<cServer>& _server_vec,
 	{			
 
 		request->setAccepted(true);
-		vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
+		vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
 		vector<cServer*>::iterator iter_optimal_depolyment_vec = optimal_deployment.begin();
-		for (;iter_vm_vec != request->vm_vec.end();iter_vm_vec++,iter_optimal_depolyment_vec++)
+		for (;iter_vm_vec != request->p_vm_vec->end();iter_vm_vec++,iter_optimal_depolyment_vec++)
 		{
 			iter_vm_vec->setHostedServPoint(*iter_optimal_depolyment_vec);
 			iter_vm_vec->setHostedServID((*iter_optimal_depolyment_vec)->getID());

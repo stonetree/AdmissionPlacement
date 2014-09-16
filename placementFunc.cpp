@@ -78,8 +78,8 @@ bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int
 
 	//taking the order for VMs
 	multimap<double,cVirtualMachine*> vm_index_multimap;
-	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::iterator iter_vm_vec = _request->p_vm_vec->begin();
+	for (;iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
 		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
@@ -139,8 +139,8 @@ bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 
 	//taking the order for VMs
 	multimap<double,cVirtualMachine*> vm_index_multimap;
-	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::iterator iter_vm_vec = _request->p_vm_vec->begin();
+	for (;iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
 		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
@@ -199,8 +199,8 @@ bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _ite
 
 	//taking the order for VMs
 	multimap<double,cVirtualMachine*> vm_index_multimap;
-	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::iterator iter_vm_vec = _request->p_vm_vec->begin();
+	for (;iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
 		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
@@ -269,7 +269,7 @@ bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 	//The reason why we use this simple method is because the objective associated with this optimization problem
 	//can not be solved with cplex.
 
-	int vm_num = _request->vm_vec.size();
+	int vm_num = _request->p_vm_vec->size();
 	int server_num = _server_vec.size();
 
 	map<ID,double>::iterator find_iter_server_cpu_required_map;
@@ -303,7 +303,7 @@ bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 		//find a potential placement configuration 
 
 		//check whether it is satisfied the capacity constrain
-		vector<cVirtualMachine>::iterator iter_vm = _request->vm_vec.begin();
+		vector<cVirtualMachine>::iterator iter_vm = _request->p_vm_vec->begin();
 		vector<ID>::const_iterator iter_vm_hosting_ID = vm_index.begin();
 
 		
@@ -357,7 +357,7 @@ bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 			*_iteration_placement = 1;
 
 			vector<ID>::iterator iter_hosting_server_id = vm_index.begin();
-			vector<cVirtualMachine>::iterator iter_vm = _request->vm_vec.begin();
+			vector<cVirtualMachine>::iterator iter_vm = _request->p_vm_vec->begin();
 
 			for (;iter_hosting_server_id != vm_index.end();iter_hosting_server_id++,iter_vm++)
 			{
@@ -383,7 +383,7 @@ bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 //	
 //	IloInt sizeI,sizeJ;
 //
-//	IloInt vm_size = _request->vm_vec.size();
+//	IloInt vm_size = _request->p_vm_vec->size();
 //	IloInt server_size = _server_vec.size();
 //
 //	int vm_index = 0;
@@ -404,8 +404,8 @@ bool optimalVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 //
 //	//Initial resource requirement for each VM
 //	IloNumArray resource_requirement(env,vm_size);
-//	vector<cVirtualMachine>::iterator iter_vm = _request->vm_vec.begin();
-//	for (vm_index = 0;iter_vm != _request->vm_vec.end();iter_vm++,vm_index++)
+//	vector<cVirtualMachine>::iterator iter_vm = _request->p_vm_vec->begin();
+//	for (vm_index = 0;iter_vm != _request->p_vm_vec->end();iter_vm++,vm_index++)
 //	{
 //		resource_requirement[vm_index] = iter_vm->getcpuRequired();
 //	}

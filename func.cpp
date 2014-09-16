@@ -14,7 +14,7 @@ int counting = -1;
 void allocateRequest(cRequest* _p_request)
 {
 	vector<cVirtualMachine>::iterator iter_vm_vec;
-	for (iter_vm_vec = _p_request->vm_vec.begin();iter_vm_vec != _p_request->vm_vec.end();iter_vm_vec++)
+	for (iter_vm_vec = _p_request->p_vm_vec->begin();iter_vm_vec != _p_request->p_vm_vec->end();iter_vm_vec++)
 	{
 		(iter_vm_vec->getHostedServerPoint())->allocateVirtMach(&(*iter_vm_vec));
 	}
@@ -25,7 +25,7 @@ void allocateRequest(cRequest* _p_request)
 void releaseRequest(cRequest* _p_request)
 {
 	vector<cVirtualMachine>::iterator iter_vm_vec;
-	for (iter_vm_vec = _p_request->vm_vec.begin();iter_vm_vec != _p_request->vm_vec.end();iter_vm_vec++)
+	for (iter_vm_vec = _p_request->p_vm_vec->begin();iter_vm_vec != _p_request->p_vm_vec->end();iter_vm_vec++)
 	{
 		(iter_vm_vec->getHostedServerPoint())->releaseVirtMach(&(*iter_vm_vec));
 	}	
@@ -38,7 +38,7 @@ bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,pl
 	
 	_request->setAccepted(false);
 	vector<cVirtualMachine>::iterator iter_vm_vec;
-	for (iter_vm_vec = _request->vm_vec.begin();iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	for (iter_vm_vec = _request->p_vm_vec->begin();iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		iter_vm_vec->setHostedServID(0);
 		iter_vm_vec->setHostedServPoint(NULL);
@@ -52,7 +52,7 @@ bool vmDeployment(vector<cServer>& _server_vec,cRequest* _request,pair<string,pl
 
 	if (!_request->getAccepted())
 	{
-		for (iter_vm_vec = _request->vm_vec.begin();iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+		for (iter_vm_vec = _request->p_vm_vec->begin();iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 		{
 			iter_vm_vec->setHostedServID(0);
 			iter_vm_vec->setHostedServPoint(NULL);
@@ -83,8 +83,8 @@ unsigned long int BKDRHash(const vector<cServer>& _server_vec,const cRequest* _r
 		state_disk_residual.push_back(iter_server_vec->getdiskResidual());
 	}
 
-	vector<cVirtualMachine>::const_iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::const_iterator iter_vm_vec = _request->p_vm_vec->begin();
+	for (;iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		state_cpu_residual[iter_vm_vec->getHostedServID() - 1] -= iter_vm_vec->getcpuRequired();
 		state_mem_residual[iter_vm_vec->getHostedServID() - 1] -= iter_vm_vec->getmemRequired();
@@ -175,8 +175,8 @@ unsigned long int BKDRHashDeparture(const vector<cServer>& _server_vec,const cRe
 		state_disk_residual.push_back(iter_server_vec->getdiskResidual());
 	}
 
-	vector<cVirtualMachine>::const_iterator iter_vm_vec = _request->vm_vec.begin();
-	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::const_iterator iter_vm_vec = _request->p_vm_vec->begin();
+	for (;iter_vm_vec != _request->p_vm_vec->end();iter_vm_vec++)
 	{
 		state_cpu_residual[iter_vm_vec->getHostedServID() - 1] += iter_vm_vec->getcpuRequired();
 		state_mem_residual[iter_vm_vec->getHostedServID() - 1] += iter_vm_vec->getmemRequired();
@@ -225,16 +225,16 @@ unsigned long int BKDRHashArriDepar(const vector<cServer>& _server_vec,const cRe
 		state_disk_residual.push_back(iter_server_vec->getdiskResidual());
 	}
 
-	vector<cVirtualMachine>::const_iterator iter_vm_vec = _curr_arrive_requ->vm_vec.begin();
-	for (;iter_vm_vec != _curr_arrive_requ->vm_vec.end();iter_vm_vec++)
+	vector<cVirtualMachine>::const_iterator iter_vm_vec = _curr_arrive_requ->p_vm_vec->begin();
+	for (;iter_vm_vec != _curr_arrive_requ->p_vm_vec->end();iter_vm_vec++)
 	{
 		state_cpu_residual[iter_vm_vec->getHostedServID() - 1] -= iter_vm_vec->getcpuRequired();
 		state_mem_residual[iter_vm_vec->getHostedServID() - 1] -= iter_vm_vec->getmemRequired();
 		state_disk_residual[iter_vm_vec->getHostedServID() - 1] -= iter_vm_vec->getdiskRequired();
 	}
 		
-	iter_vm_vec = _pontential_depar_requ->vm_vec.begin();
-	for (;iter_vm_vec != _pontential_depar_requ->vm_vec.end();iter_vm_vec++)
+	iter_vm_vec = _pontential_depar_requ->p_vm_vec->begin();
+	for (;iter_vm_vec != _pontential_depar_requ->p_vm_vec->end();iter_vm_vec++)
 	{
 		state_cpu_residual[iter_vm_vec->getHostedServID() - 1] += iter_vm_vec->getcpuRequired();
 		state_mem_residual[iter_vm_vec->getHostedServID() - 1] += iter_vm_vec->getmemRequired();
@@ -278,7 +278,7 @@ unsigned long int calculateRequestStateIndicator(const vector<cServer>& _server_
 	return BKDRHash(_server_vec,_request);
 
 	//vector<cVirtualMachine>::const_iterator const_iter_vm_vec;
-	//for (const_iter_vm_vec = _request->vm_vec.begin();const_iter_vm_vec != _request->vm_vec.end();const_iter_vm_vec++)
+	//for (const_iter_vm_vec = _request->p_vm_vec->begin();const_iter_vm_vec != _request->p_vm_vec->end();const_iter_vm_vec++)
 	//{
 
 	//	total_residual = ((const_iter_vm_vec->getcpuRequired() + const_iter_vm_vec->getmemRequired() + const_iter_vm_vec->getdiskRequired()) * \
@@ -294,7 +294,7 @@ unsigned long int calculateRequestDepartureStateIndicator(const vector<cServer>&
 	return BKDRHashDeparture(_server_vec,_request);
 
 	//vector<cVirtualMachine>::const_iterator const_iter_vm_vec;
-	//for (const_iter_vm_vec = _request->vm_vec.begin();const_iter_vm_vec != _request->vm_vec.end();const_iter_vm_vec++)
+	//for (const_iter_vm_vec = _request->p_vm_vec->begin();const_iter_vm_vec != _request->p_vm_vec->end();const_iter_vm_vec++)
 	//{
 
 	//	total_residual = ((const_iter_vm_vec->getcpuRequired() + const_iter_vm_vec->getmemRequired() + const_iter_vm_vec->getdiskRequired()) * \
@@ -361,11 +361,11 @@ double obtainCommuCost(const cRequest* _request)
 {
 	double requ_commu_cost = 0;
 	vector<cVirtualMachine>::const_iterator const_iter_src_vm_vec,const_iter_des_vm_vec;
-	const_iter_src_vm_vec = _request->vm_vec.begin();
+	const_iter_src_vm_vec = _request->p_vm_vec->begin();
 
-	for (;const_iter_src_vm_vec != _request->vm_vec.end();const_iter_src_vm_vec++)
+	for (;const_iter_src_vm_vec != _request->p_vm_vec->end();const_iter_src_vm_vec++)
 	{
-		for (const_iter_des_vm_vec = const_iter_src_vm_vec + 1;const_iter_des_vm_vec != _request->vm_vec.end();const_iter_des_vm_vec++)
+		for (const_iter_des_vm_vec = const_iter_src_vm_vec + 1;const_iter_des_vm_vec != _request->p_vm_vec->end();const_iter_des_vm_vec++)
 		{
 			requ_commu_cost += commu_cost[const_iter_src_vm_vec->getHostedServID() - 1][const_iter_des_vm_vec->getHostedServID() - 1];
 		}
@@ -433,11 +433,11 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	if (_request->getAccepted())
 	{
 
-		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size() - obtainCommuCost(_request)) * _request->getDurationTime();	
+		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->p_vm_vec->size() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
-		return discout_factor * state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->vm_vec.size() * _request->getDurationTime();
+		return discout_factor * state_value - (service_type_map[_request->getServiceType()])->getUnitPenalty()* _request->p_vm_vec->size() * _request->getDurationTime();
 	}
 
 }
@@ -491,8 +491,8 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 					break;
 				}
 
-				vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
-				for (;iter_vm_vec != request->vm_vec.end();iter_vm_vec++)
+				vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
+				for (;iter_vm_vec != request->p_vm_vec->end();iter_vm_vec++)
 				{
 					optimal_deployment.push_back(iter_vm_vec->getHostedServerPoint());
 				}
@@ -521,9 +521,9 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	{			
 
 		request->setAccepted(true);
-		vector<cVirtualMachine>::iterator iter_vm_vec = request->vm_vec.begin();
+		vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
 		vector<cServer*>::iterator iter_optimal_depolyment_vec = optimal_deployment.begin();
-		for (;iter_vm_vec != request->vm_vec.end();iter_vm_vec++,iter_optimal_depolyment_vec++)
+		for (;iter_vm_vec != request->p_vm_vec->end();iter_vm_vec++,iter_optimal_depolyment_vec++)
 		{
 			iter_vm_vec->setHostedServPoint(*iter_optimal_depolyment_vec);
 			iter_vm_vec->setHostedServID((*iter_optimal_depolyment_vec)->getID());

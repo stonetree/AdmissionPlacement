@@ -162,7 +162,7 @@ static void generateSampleRequest(const multimap<double,requesttype>& _request_a
 	//vector<cRequest>::iterator iter_request = _request_vec.begin();
 	//for (;iter_request != _request_vec.end();iter_request++)
 	//{
-	//	average_profits += ((service_type_map[iter_request->getServiceType()])->getUnitReward() * iter_request->vm_vec.size()) * iter_request->getDurationTime();
+	//	average_profits += ((service_type_map[iter_request->getServiceType()])->getUnitReward() * iter_request->p_vm_vec->size()) * iter_request->getDurationTime();
 	//}
 
 	//cout<<"The average profits is "<<average_profits / (sample_index + 1)<<endl;
@@ -182,7 +182,7 @@ static void generateSmapleEventList(vector<cRequest>& _request_vec,multimap<doub
 	for (;iter_request_vec != _request_vec.end();iter_request_vec++,id++)
 	{
 		
-		for (iter_vm = iter_request_vec->vm_vec.begin();iter_vm != iter_request_vec->vm_vec.end();iter_vm++)
+		for (iter_vm = iter_request_vec->p_vm_vec->begin();iter_vm != iter_request_vec->p_vm_vec->end();iter_vm++)
 		{
 			iter_vm->setRequestID(iter_request_vec->getID());
 			iter_vm->setRequestPoint(&(*iter_request_vec));

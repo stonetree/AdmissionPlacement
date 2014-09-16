@@ -48,7 +48,7 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 				cout<<"Error!! There is no vm type existing!"<<endl;
 				exit(0);
 			}
-			//vm_vec.push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
+			//p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
 			p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
 		}
 	}
@@ -75,10 +75,10 @@ cRequest& cRequest::operator=(const cRequest& _requ)
 
 		this->p_vm_vec = new vector<cVirtualMachine>;
 		this->p_vm_vec->clear();
-		this->p_vm_vec->assign(_requ.vm_vec.begin(),_requ.vm_vec.end());
+		this->p_vm_vec->assign(_requ.p_vm_vec->begin(),_requ.p_vm_vec->end());
 
-		//vm_vec.clear();
-		//vm_vec.assign(_requ.vm_vec.begin(),_requ.vm_vec.end());
+		//p_vm_vec->clear();
+		//p_vm_vec->assign(_requ.p_vm_vec->begin(),_requ.p_vm_vec->end());
 	}
 
 	return *this;
