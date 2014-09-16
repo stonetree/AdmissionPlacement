@@ -433,7 +433,7 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	if (_request->getAccepted())
 	{
 
-		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size()) * _request->getDurationTime();	
+		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->vm_vec.size() - obtainCommuCost(_request)) * _request->getDurationTime();	
 	}
 	else
 	{
@@ -593,7 +593,6 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 	unsigned long int current_system_state_hash;
 	if (system_state.first == NONE)
 	{
-		//Currently this statement doesn't work.
 		current_system_state_hash = calculateStateIndicator(_server_vec);
 	}
 	else
@@ -639,7 +638,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 
 
 	//update state value and corresponding state policy
-	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = system_state_value_map.find(make_pair(system_state.first,system_state.second));
+	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = global_point_system_value_map[counting].find(make_pair(system_state.first,system_state.second));
 	if (iter_find_system_state_value_map == system_state_value_map.end())
 	{
 		//insert the info of current system state
@@ -670,6 +669,9 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 	{		
 		if (iter_event_multimap->second.getEventType() == DEPARTURE)
 		{
+			//set current time
+			current_time = iter_event_multimap->first;
+			
 			//delete the request from the hosting list
 			iter_find_request_map = hosted_request_map.find((iter_event_multimap->second.getRequest())->getID());
 
@@ -702,6 +704,9 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 		}
 		else
 		{
+			//set current time
+			current_time = iter_event_multimap->first;
+			
 			//a request is arriving
 			counting++;
 			//update the system state
@@ -736,8 +741,8 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 				(iter_event_multimap->second.getRequest())->setAccepted(false);
 
 				//update the value of current system state after any request departure
-				//system_state.first = NONE;
-				//updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
+				system_state.first = NONE;
+				updateStateValueRequDepar(_server_vec,hosted_request_map,hosted_requests_type_num_map);
 			}
 
 		}
@@ -760,8 +765,8 @@ void initialCommuCost(const vector<cServer>& _server_vec)
 			src_server_id = const_iter_src_server_vec->getID() - 1;
 			des_server_id = const_iter_des_server_vec->getID() - 1;
 
-			tem_src = div(src_server_id,5);
-			tem_des = div(des_server_id,5);
+			tem_src = div(src_server_id,2);
+			tem_des = div(des_server_id,2);
 
 			if (tem_src.quot == tem_des.quot)
 			{
@@ -796,7 +801,8 @@ void outputResults()
 	output_file.open("output.txt",ios::app);
 	double state_value;
 
-	output_file<<"The workload is "<<workload_rate<<"The policy is "<<policy_indicator<<endl;
+	//output_file<<"The workload is "<<workload_rate<<"The policy is "<<policy_indicator<<endl;
+	output_file<<workload_rate<<" "<<policy_indicator;
 
 	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map;
 	map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map;
@@ -811,23 +817,24 @@ void outputResults()
 		{
 			state_value = iter_find_system_state_value_map->second;
 		}
-		output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
+		//output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
+		output_file<<" "<<state_value;
 
 		iter_find_system_state_policy_map = global_point_system_policy_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
 		//iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
-		if (iter_find_system_state_policy_map != global_point_system_policy_map[0].end())
-		{
-			map<string,int>::iterator iter_state_policy = iter_find_system_state_policy_map->second.system_state_policy.begin();
-			for (;iter_state_policy != iter_find_system_state_policy_map->second.system_state_policy.end();iter_state_policy++)
-			{
-				output_file<<iter_state_policy->first<<"--"<<iter_state_policy->second<<endl;
-			}
-		}
-		output_file<<"\n"<<endl;
+		//if (iter_find_system_state_policy_map != global_point_system_policy_map[0].end())
+		//{
+		//	map<string,int>::iterator iter_state_policy = iter_find_system_state_policy_map->second.system_state_policy.begin();
+		//	for (;iter_state_policy != iter_find_system_state_policy_map->second.system_state_policy.end();iter_state_policy++)
+		//	{
+		//		output_file<<iter_state_policy->first<<"--"<<iter_state_policy->second<<endl;
+		//	}
+		//}
+		//output_file<<"\n"<<endl;
 	}
 
-	output_file<<"The average number of accepted requests is "<<average_accepted_rate/sample_request_num<<endl;
-	output_file<<"\n\n"<<endl;
+	//output_file<<"The average number of accepted requests is "<<average_accepted_rate/sample_request_num<<endl;
+	output_file<<" "<<average_accepted_rate/sample_request_num<<endl;
 	
 	output_file.close();
 	return ;

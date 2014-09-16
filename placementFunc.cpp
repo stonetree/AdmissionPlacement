@@ -43,7 +43,88 @@ bool enoughResource(cServer* _server,double _cpu_required,double _mem_required,d
 	return (server_cpu_residual >= _cpu_required)&&(server_mem_residual >= _mem_required)&&(server_disk_residual >= _disk_required);
 }
 
-bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
+double obtainEffeResidualCapa(cServer& _server)
+{
+	double effective_residual_capacity = 0;
+	double duration_time = 0.0;
+	double departure_time = 0.0;
+	double required_resource = 0.0;
+	
+	list<cVirtualMachine*>::iterator iter_vm = _server.hosted_vm_list.begin();
+	for (;iter_vm != _server.hosted_vm_list.end();iter_vm++)
+	{
+		duration_time = ((*iter_vm)->getRequestPoint())->getDurationTime();
+		departure_time = ((*iter_vm)->getRequestPoint())->getDepartureTime();
+		required_resource = (*iter_vm)->getcpuRequired();
+		effective_residual_capacity += required_resource * (1 - log(1 + duration_time - (departure_time - current_time))/log(1 + duration_time));
+	}
+	
+	return _server.getcpuCapacity() - effective_residual_capacity;
+}
+
+bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
+{
+	//This function places VMs with the novel balance placement function
+	//First, we will take the servers with the descending order based on their number of  residual resources
+	//Then, also take the VMs that will be deployed with the descending order based on its requirement to the resources
+	//Finally, we try to find enough server to host
+
+	*_iteration_placement = 0;
+	multimap<double,cServer*> server_index_multimap;
+	vector<cServer>::iterator iter_server_vec = _server_vec.begin();
+	int found_vm_count = 0;
+	double cpu_residual,mem_residual,disk_residual;
+	double effective_residual_capacity;
+
+	//taking the order for VMs
+	multimap<double,cVirtualMachine*> vm_index_multimap;
+	vector<cVirtualMachine>::iterator iter_vm_vec = _request->vm_vec.begin();
+	for (;iter_vm_vec != _request->vm_vec.end();iter_vm_vec++)
+	{
+		vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired(),&(*iter_vm_vec)));
+		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
+	}
+
+	//taking the order for servers
+	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
+	{
+		effective_residual_capacity = obtainEffeResidualCapa(*iter_server_vec);
+		server_index_multimap.insert(make_pair(effective_residual_capacity,&(*iter_server_vec)));
+		//server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
+	}
+
+	multimap<double,cServer*>::iterator iter_server_index_multimap = server_index_multimap.begin();
+	multimap<double,cVirtualMachine*>::iterator iter_vm_index_multimap = vm_index_multimap.begin();
+	for (;iter_server_index_multimap != server_index_multimap.end();iter_server_index_multimap++)
+	{
+		cpu_residual = iter_server_index_multimap->second->getcpuResidual();
+		mem_residual = iter_server_index_multimap->second->getmemResidual();
+		disk_residual = iter_server_index_multimap->second->getdiskResidual();
+
+		while(enoughResource(cpu_residual,mem_residual,disk_residual,iter_vm_index_multimap->second))
+		{
+			cpu_residual -= iter_vm_index_multimap->second->getcpuRequired();
+			mem_residual -= iter_vm_index_multimap->second->getmemRequired();
+			disk_residual -= iter_vm_index_multimap->second->getdiskRequired();
+
+			iter_vm_index_multimap->second->setHostedServPoint(iter_server_index_multimap->second);
+			iter_vm_index_multimap->second->setHostedServID(iter_server_index_multimap->second->getID());
+
+			iter_vm_index_multimap++;
+			if (iter_vm_index_multimap == vm_index_multimap.end())
+			{
+				_request->setAccepted(true);
+				return true;
+			}
+		}
+	}
+
+	_request->setAccepted(false);
+
+	return false;
+}
+
+bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
 {
 	//This function places VMs with the greedy manner
 	//First, we will take the servers with the descending order based on their number of  residual resources
@@ -85,7 +166,7 @@ bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _ite
 			cpu_residual -= reverse_iter_vm_index_multimap->second->getcpuRequired();
 			mem_residual -= reverse_iter_vm_index_multimap->second->getmemRequired();
 			disk_residual -= reverse_iter_vm_index_multimap->second->getdiskRequired();
-			
+
 			reverse_iter_vm_index_multimap->second->setHostedServPoint(reverse_iter_server_index_multimap->second);
 			reverse_iter_vm_index_multimap->second->setHostedServID(reverse_iter_server_index_multimap->second->getID());
 
@@ -99,10 +180,11 @@ bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _ite
 	}
 
 	_request->setAccepted(false);
+
 	return false;
 }
 
-bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
+bool greedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
 {
 	//This function places VMs with the greedy manner
 	//First, we will take the servers with the descending order based on their number of  residual resources
@@ -139,7 +221,7 @@ bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 		mem_residual = iter_server_index_multimap->second->getmemResidual();
 		disk_residual = iter_server_index_multimap->second->getdiskResidual();
 
-		if(enoughResource(cpu_residual,mem_residual,disk_residual,iter_vm_index_multimap->second))
+		while(enoughResource(cpu_residual,mem_residual,disk_residual,iter_vm_index_multimap->second))
 		{
 			cpu_residual -= iter_vm_index_multimap->second->getcpuRequired();
 			mem_residual -= iter_vm_index_multimap->second->getmemRequired();
@@ -156,6 +238,7 @@ bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _it
 			}
 		}
 	}
+	_request->setAccepted(false);
 	return false;
 }
 
@@ -461,8 +544,8 @@ void initialPolicies(unsigned int _conf_policy)
 	}
 	else if (t.quot == 3)
 	{
-		policy.first = "OPTIMAL";
-		policy.second = optimalVMPlacement;
+		policy.first = "NOVAL";
+		policy.second = novelBalanceVMPlacement;
 		policy_vec.push_back(policy);
 
 		if (t.rem == 1)

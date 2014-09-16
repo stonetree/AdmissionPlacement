@@ -15,9 +15,9 @@ const unsigned int total_service_type_num = 3;
 const double discout_factor = 0.999;
 const double value_function_update_factor = 0.9;
 
-const double local_communication_cost = 0.03;
-const double tor_communication_cost = 0.05;
-const double remote_communication_cost = 0.1;
+const double local_communication_cost = 0.01;
+const double tor_communication_cost = 0.02;
+const double remote_communication_cost = 0.05;
 
 vector<vector<double>> commu_cost;
 vector<double> basisFuncParameter;
@@ -29,6 +29,8 @@ double average_accepted_rate = 0;
 double accepted_requests_num = 0;
 
 double workload_rate = 0;
+
+double current_time = 0;
 
 
 vector<pair<string,placementfunction>> policy_vec;

@@ -49,6 +49,7 @@ extern map<pair<requesttype,unsigned long int>,cPolity> system_state_policy_map;
 extern unsigned int sample_index;
 extern unsigned long int interval_timeSeed;
 extern unsigned long int duration_time_seed;
+extern double current_time;
 
 extern void insertDepartureEvent(cRequest* _p_request,multimap<double,cEvent>& _event_multimap);
 
