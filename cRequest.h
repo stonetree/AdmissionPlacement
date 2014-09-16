@@ -20,7 +20,8 @@ private:
 
 
 public:
-	vector<cVirtualMachine> vm_vec;
+	vector<cVirtualMachine> *p_vm_vec;
+	//vector<cVirtualMachine> vm_vec;
 
 public:
 	void   setID(ID _id){id = _id;}
