@@ -8,7 +8,7 @@ cRequest::cRequest(void)
 
 cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _duration_time, double _departure_time,requesttype _request_type,\
 
-	servicetype _service_type,const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,bool _is_accepted)
+	servicetype _service_type,const map<servicetype,cService*>& _service_type_map,const map<VMtype,cBaseVM>& _base_vm_map,unsigned long int _required_service_num,bool _is_accepted)
 {
 	id = _id;
 	is_accepted = _is_accepted;
@@ -35,23 +35,27 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 
 	p_vm_vec = new vector<cVirtualMachine>;
 
-	for (const_iter_vm_type = const_find_service_type->second->vm_request_map.begin();const_iter_vm_type != const_find_service_type->second->vm_request_map.end();const_iter_vm_type++)
+	unsigned long int index_required_service_num = 0;
+	for (;index_required_service_num < _required_service_num;index_required_service_num++)
 	{
-		int i = 0;
-		ID id = 1;
-		for (i = 0;i < const_iter_vm_type->second;i++,id++)
+		for (const_iter_vm_type = const_find_service_type->second->vm_request_map.begin();const_iter_vm_type != const_find_service_type->second->vm_request_map.end();const_iter_vm_type++)
 		{
-			const_find_vm_type = _base_vm_map.find(const_iter_vm_type->first);
-			if (const_find_vm_type == _base_vm_map.end())
+			int i = 0;
+			ID id = 1;
+			for (i = 0;i < const_iter_vm_type->second;i++,id++)
 			{
-				cout<<"It's looking for "<<const_iter_vm_type->first<<" vm type"<<endl;
-				cout<<"Error!! There is no vm type existing!"<<endl;
-				exit(0);
+				const_find_vm_type = _base_vm_map.find(const_iter_vm_type->first);
+				if (const_find_vm_type == _base_vm_map.end())
+				{
+					cout<<"It's looking for "<<const_iter_vm_type->first<<" vm type"<<endl;
+					cout<<"Error!! There is no vm type existing!"<<endl;
+					exit(0);
+				}
+				//p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
+				p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
 			}
-			//p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
-			p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
-		}
-	}
+		}//end for(const_iter_vm_type...
+	}//end for(;index_required_service_num...
 }
 
 cRequest::cRequest(const cRequest& _requ)
