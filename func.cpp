@@ -433,7 +433,7 @@ double obtainDeploymentProfits(vector<cServer>& _server_vec,cRequest* _request,\
 	if (_request->getAccepted())
 	{
 
-		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->p_vm_vec->size() - obtainCommuCost(_request)) * _request->getDurationTime();	
+		return discout_factor * state_value + ((service_type_map[_request->getServiceType()])->getUnitReward() * _request->p_vm_vec->size()) * _request->getDurationTime();	
 	}
 	else
 	{
