@@ -639,7 +639,7 @@ void updateStateValueRequDepar(const vector<cServer>& _server_vec,const map<ID,c
 
 	//update state value and corresponding state policy
 	map<pair<requesttype,unsigned long int>,double>::iterator iter_find_system_state_value_map = global_point_system_value_map[counting].find(make_pair(system_state.first,system_state.second));
-	if (iter_find_system_state_value_map == system_state_value_map.end())
+	if (iter_find_system_state_value_map == global_point_system_value_map[counting].end())
 	{
 		//insert the info of current system state
 		system_state_value_map.insert(make_pair(make_pair(system_state.first,system_state.second),state_value));	
@@ -736,6 +736,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			}
 			else
 			{
+				allocation_fail_num++;
 				//do nothing
 				//the arriving request is rejected due to 1) having not enough residual resources, or 2) maximizing profits policy
 				(iter_event_multimap->second.getRequest())->setAccepted(false);
@@ -834,7 +835,7 @@ void outputResults()
 	}
 
 	//output_file<<"The average number of accepted requests is "<<average_accepted_rate/sample_request_num<<endl;
-	output_file<<" "<<average_accepted_rate/sample_request_num<<endl;
+	output_file<<" "<<average_accepted_rate/sample_request_num<<" "<<average_accepted_rate/sample_request_num<<endl;
 	
 	output_file.close();
 	return ;
