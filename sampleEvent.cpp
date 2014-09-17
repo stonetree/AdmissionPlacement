@@ -203,6 +203,7 @@ static void generateSampleRequest(const multimap<double,requesttype>& _request_a
 
 		max_required_service_num = determineMaxRequiredServiceNum(const_iter_request_arrival_time_multipmap->second);
 				
+		//required_service_num = max_required_service_num;
 		required_service_num = 1 + gsl_rng_uniform_int(const_iter_rng_service_num_generator_map->second.second,max_required_service_num);
 		
 		_request_vec.push_back(cRequest(requ_id++,const_iter_request_type_map->second.first,const_iter_request_type_map->second.second,const_iter_request_arrival_time_multipmap->first,\

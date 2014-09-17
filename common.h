@@ -51,6 +51,7 @@ extern unsigned long int interval_timeSeed;
 extern unsigned long int duration_time_seed;
 extern unsigned long int required_vm_num_seed;
 extern double current_time;
+extern double allocation_fail_num;
 
 extern void insertDepartureEvent(cRequest* _p_request,multimap<double,cEvent>& _event_multimap);
 

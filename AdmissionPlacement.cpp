@@ -8,7 +8,7 @@
 #include "common.h"
 #include "cSystemState.h"
 
-const unsigned int sample_request_num = 20000;
+const unsigned int sample_request_num = 50000;
 const unsigned int total_request = 100;
 const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
@@ -25,8 +25,13 @@ vector<double> basisFuncParameter;
 pair<requesttype,unsigned long int> system_state;
 unsigned long int initial_system_state_indicator = 0;
 
+/************************************************************************/
+/*                    For monitoring purpose                            */
 double average_accepted_rate = 0;
 double accepted_requests_num = 0;
+double allocation_fail_num = 0;
+double average_allocation_fail_rate = 0;
+/************************************************************************/
 
 double workload_rate = 0;
 
@@ -79,6 +84,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		initialInputParameter(iter_config_vec);
 
 		average_accepted_rate = 0;
+		average_allocation_fail_rate = 0;
 		
 		system_value_map  *p_system_value_map = new system_value_map[total_request + 1];
 		system_policy_map *p_system_policy_map = new system_policy_map[total_request + 1];
@@ -90,6 +96,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 		{
 			accepted_requests_num = 0;
+			allocation_fail_num = 0;
 
 			cout<<"The "<<sample_index<<" sample path"<<endl;
 
@@ -121,6 +128,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			event_id = 1;
 			
 			average_accepted_rate += accepted_requests_num/total_request;
+			average_allocation_fail_rate += allocation_fail_num/total_request;
 
 			delete p_request_vec;
 			delete p_server_vec;
