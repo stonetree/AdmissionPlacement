@@ -9,12 +9,12 @@ const double vm_medium_mem = 0;
 const double vm_medium_disk = 0;
 
 //VM referred as LARGE
-const double vm_large_cpu = 5;
+const double vm_large_cpu = 4;
 const double vm_large_mem = 0;
 const double vm_large_disk = 0;
 
 //VM referred as XLARGE
-const double vm_xlarge_cpu = 8;
+const double vm_xlarge_cpu = 6;
 const double vm_xlarge_mem = 0;
 const double vm_xlarge_disk = 0;
 
