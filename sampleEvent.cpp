@@ -294,7 +294,7 @@ void generateSampleEvent(vector<cRequest>& _request_vec,multimap<double,cEvent>&
 	//It is used to initialize the set of requests
 	//Since we want to initialize a set of requests with different types of arrival configurations,
 	//we should more carefully think about how to make those requests spread reasonably over the whole simulation time. 
-	multimap<double,requesttype> *p_request_arrival_time_multimap = new multimap<double,requesttype>;
+          	multimap<double,requesttype> *p_request_arrival_time_multimap = new multimap<double,requesttype>;
 	//multimap<double,requesttype>  request_arrival_time_multimap;
 
 	//initial the arrival time sequence for coming requests

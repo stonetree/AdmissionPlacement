@@ -21,6 +21,7 @@ extern const double discout_factor;
 extern const double value_function_update_factor;
 extern const unsigned int total_server_num;
 extern double average_accepted_rate;
+extern double average_allocation_fail_rate;
 extern double accepted_requests_num;
 extern const unsigned int sample_request_num;
 extern double workload_rate;

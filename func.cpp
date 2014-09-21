@@ -462,11 +462,18 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 	double hash_current_placement = 0;
 	double hash_optimal_placement = 0;
 
+	bool flag_find_placement = false;
+
 	int iteration_placement = 0;
 	for (iter_placement_vec = policy_vec.begin();iter_placement_vec != policy_vec.end();iter_placement_vec++)
 	{
 		while(vmDeployment(_server_vec,request,*iter_placement_vec,&iteration_placement))
 		{			
+			if (iter_placement_vec->first != "NO_PLACEMENT")
+			{
+				flag_find_placement = true;
+			}
+			
 			find_solution = true;
 			//the placement func processes correctly
 			//A solution is found including "NO_PLACEMENT" solution
@@ -582,6 +589,11 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 			}
 		}
 	}//end...if(find_solutino)
+
+	if (!flag_find_placement)
+	{
+		allocation_fail_num++;
+	}
 	
 	//system_state.second = calculateRequestStateIndicator(_server_vec,request);
 	return accepted_arriving_request;
@@ -736,7 +748,6 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			}
 			else
 			{
-				allocation_fail_num++;
 				//do nothing
 				//the arriving request is rejected due to 1) having not enough residual resources, or 2) maximizing profits policy
 				(iter_event_multimap->second.getRequest())->setAccepted(false);
@@ -801,6 +812,8 @@ void outputResults()
 
 	output_file.open("output.txt",ios::app);
 	double state_value;
+	double expected_state_value = 0;
+	double total_transition_rate = 0;
 
 	//output_file<<"The workload is "<<workload_rate<<"The policy is "<<policy_indicator<<endl;
 	output_file<<workload_rate<<" "<<policy_indicator;
@@ -820,6 +833,8 @@ void outputResults()
 		}
 		//output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
 		output_file<<" "<<state_value;
+		expected_state_value += state_value * iter_request_type_map->second.first;
+		total_transition_rate += iter_request_type_map->second.first;
 
 		iter_find_system_state_policy_map = global_point_system_policy_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
 		//iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
@@ -833,9 +848,11 @@ void outputResults()
 		//}
 		//output_file<<"\n"<<endl;
 	}
-
+	
+	//output the expected value
+	output_file<<" "<<expected_state_value/total_transition_rate;
 	//output_file<<"The average number of accepted requests is "<<average_accepted_rate/sample_request_num<<endl;
-	output_file<<" "<<average_accepted_rate/sample_request_num<<" "<<average_accepted_rate/sample_request_num<<endl;
+	output_file<<" "<<average_accepted_rate/sample_request_num<<" "<<average_allocation_fail_rate/sample_request_num<<endl;
 	
 	output_file.close();
 	return ;
