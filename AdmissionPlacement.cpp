@@ -9,7 +9,7 @@
 #include "cSystemState.h"
 
 const unsigned int sample_request_num = 50000;
-const unsigned int total_request = 100;
+const unsigned int total_request = 500;
 const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;
 const double discout_factor = 0.999;

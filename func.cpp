@@ -561,32 +561,32 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 		{
 			//insert the info of current system state
 			global_point_system_value_map[counting].insert(make_pair(make_pair(system_state.first,system_state.second),max_profit));
-			cPolity policy;
+/*			cPolity policy;
 			policy.system_state_policy.insert(make_pair(name_optimal_policy,1));
-			global_point_system_policy_map[counting].insert(make_pair(make_pair(system_state.first,system_state.second),policy));		
+			global_point_system_policy_map[counting].insert(make_pair(make_pair(system_state.first,system_state.second),policy));	*/	
 		}
 		else
 		{
 			iter_find_system_state_value_map->second = (1 - value_function_update_factor)* iter_find_system_state_value_map->second + value_function_update_factor * max_profit;
 
 
-			map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map = global_point_system_policy_map[counting].find(make_pair(system_state.first,system_state.second));
-			if (iter_find_system_state_policy_map == global_point_system_policy_map[counting].end())
-			{
-				cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
-				exit(0);
-			}
+			//map<pair<requesttype,unsigned long int>,cPolity>::iterator iter_find_system_state_policy_map = global_point_system_policy_map[counting].find(make_pair(system_state.first,system_state.second));
+			//if (iter_find_system_state_policy_map == global_point_system_policy_map[counting].end())
+			//{
+			//	cout<<"Error!!!Can not locate the policy for current state!!!"<<endl;
+			//	exit(0);
+			//}
 
-			map<string,int>::iterator iter_find_state_policy;
-			iter_find_state_policy = iter_find_system_state_policy_map->second.system_state_policy.find(name_optimal_policy);
-			if (iter_find_state_policy == iter_find_system_state_policy_map->second.system_state_policy.end())
-			{
-				iter_find_system_state_policy_map->second.system_state_policy.insert(make_pair(name_optimal_policy,1));
-			}
-			else
-			{
-				(iter_find_state_policy->second)++;
-			}
+			//map<string,int>::iterator iter_find_state_policy;
+			//iter_find_state_policy = iter_find_system_state_policy_map->second.system_state_policy.find(name_optimal_policy);
+			//if (iter_find_state_policy == iter_find_system_state_policy_map->second.system_state_policy.end())
+			//{
+			//	iter_find_system_state_policy_map->second.system_state_policy.insert(make_pair(name_optimal_policy,1));
+			//}
+			//else
+			//{
+			//	(iter_find_state_policy->second)++;
+			//}
 		}
 	}//end...if(find_solutino)
 
@@ -836,7 +836,9 @@ void outputResults()
 		expected_state_value += state_value * iter_request_type_map->second.first;
 		total_transition_rate += iter_request_type_map->second.first;
 
-		iter_find_system_state_policy_map = global_point_system_policy_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		//iter_find_system_state_policy_map = global_point_system_policy_map[0].find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
+		
+		
 		//iter_find_system_state_policy_map = system_state_policy_map.find(make_pair(iter_request_type_map->first,initial_system_state_indicator));
 		//if (iter_find_system_state_policy_map != global_point_system_policy_map[0].end())
 		//{
