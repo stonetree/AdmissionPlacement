@@ -15,7 +15,7 @@ extern double low_arrival_rate;
 extern double hight_arrival_rate;
 extern double xhight_arrival_rate;
 
-extern const unsigned int total_request;
+extern unsigned int total_request;
 extern const unsigned int total_service_type_num;
 extern const double discout_factor;
 extern const double value_function_update_factor;
@@ -23,7 +23,7 @@ extern const unsigned int total_server_num;
 extern double average_accepted_rate;
 extern double average_allocation_fail_rate;
 extern double accepted_requests_num;
-extern const unsigned int sample_request_num;
+extern unsigned int sample_request_num;
 extern double workload_rate;
 
 extern ID event_id;

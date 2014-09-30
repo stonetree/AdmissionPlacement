@@ -2,7 +2,7 @@
 #include "cService.h"
 
 //global variables
-extern const unsigned int total_request;
+extern unsigned int total_request;
 extern const unsigned int total_service_type_num;
 
 //define the parameters w.r.t the configurations of different types of services in terms of the type and num of VMs required/

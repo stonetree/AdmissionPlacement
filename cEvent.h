@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "cRequest.h"
 
-extern const unsigned int total_request;
+extern unsigned int total_request;
 extern const unsigned int service_type_num;
 
 class cEvent

@@ -871,6 +871,8 @@ bool initialInputfile(vector<cConfiguration>& _config_vec)
 	char high_rate[20];
 	char xhigh_rate[20];
 	char policy[20];
+	char num_sample_path[20];
+	char num_requests[20];
 
 
 	char buf[101];
@@ -884,8 +886,8 @@ bool initialInputfile(vector<cConfiguration>& _config_vec)
 	while(!inputFile.eof())
 	{
 		inputFile.getline(buf,100,'\n');
-		sscanf(buf,"%s %s %s %s %s\n",workload, low_rate,high_rate,xhigh_rate,policy);
-		_config_vec.push_back(cConfiguration(atof(workload),atof(low_rate),atof(high_rate),atof(xhigh_rate),atof(policy)));
+		sscanf(buf,"%s %s %s %s %s %s %s\n",workload, low_rate,high_rate,xhigh_rate,policy,num_sample_path,num_requests);
+		_config_vec.push_back(cConfiguration(atof(workload),atof(low_rate),atof(high_rate),atof(xhigh_rate),atof(policy),atof(num_sample_path),atof(num_requests)));
 	}
 
 	return true;
@@ -901,5 +903,8 @@ void initialInputParameter(vector<cConfiguration>::iterator _iter_config_vec)
 
 	policy_indicator = _iter_config_vec->getPolicy();
 	initialPolicies(policy_indicator);	
+
+	sample_request_num = _iter_config_vec->getNumSamplePath();
+	total_request = _iter_config_vec->getNumRequest();
 	return;
 }
