@@ -63,7 +63,30 @@ double obtainEffeResidualCapa(cServer& _server)
 	return _server.getcpuCapacity() - occupied_capacity;
 }
 
-bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
+double obtainDepartureRate(cServer& _server)
+{
+	double departure_rate = 0;
+
+	list<cVirtualMachine*>::iterator iter_vm = _server.hosted_vm_list.begin();
+	map<requesttype,pair<double,double>>::iterator find_iter_request_type_map;
+	for (;iter_vm != _server.hosted_vm_list.end();iter_vm++)
+	{
+		find_iter_request_type_map = request_type_map.find(((*iter_vm)->getRequestPoint())->getRequestType());
+		if (find_iter_request_type_map == request_type_map.end())
+		{
+			cout<<"ERROR!!!Can not locate the request type for calculating the effective residual capacity"<<endl;
+			exit(0);
+		}
+
+		departure_rate += (*iter_vm)->getcpuRequired() * find_iter_request_type_map->second.second;		
+
+		//occupied_capacity += required_resource * (1 - log(1 + duration_time - (departure_time - current_time))/log(1 + duration_time));
+	}
+
+	return departure_rate;
+}
+
+bool novelGreedyVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
 {
 	//This function places VMs with the novel balance placement function
 	//First, we will take the servers with the descending order based on their number of  residual resources
@@ -76,6 +99,7 @@ bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int
 	int found_vm_count = 0;
 	double cpu_residual,mem_residual,disk_residual;
 	double effective_residual_capacity;
+	int    departure_rate;
 
 	//taking the order for VMs
 	multimap<double,cVirtualMachine*> vm_index_multimap;
@@ -86,11 +110,19 @@ bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int
 		//vm_index_multimap.insert(make_pair(iter_vm_vec->getcpuRequired() * iter_vm_vec->getmemRequired() * iter_vm_vec->getdiskRequired(),&(*iter_vm_vec)));
 	}
 
-	//taking the order for servers
+	////rearrange servers with the ascending order with respect to their effective residual capacity
+	//for (;iter_server_vec != _server_vec.end();iter_server_vec++)
+	//{
+	//	effective_residual_capacity = obtainEffeResidualCapa(*iter_server_vec);
+	//	server_index_multimap.insert(make_pair(effective_residual_capacity,&(*iter_server_vec)));
+	//	//server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
+	//}
+
+	//rearrange servers with the ascending order with respect to their expected departure rate
 	for (;iter_server_vec != _server_vec.end();iter_server_vec++)
 	{
-		effective_residual_capacity = obtainEffeResidualCapa(*iter_server_vec);
-		server_index_multimap.insert(make_pair(effective_residual_capacity,&(*iter_server_vec)));
+		departure_rate = obtainDepartureRate(*iter_server_vec);
+		server_index_multimap.insert(make_pair(departure_rate,&(*iter_server_vec)));
 		//server_index_multimap.insert(make_pair(iter_server_vec->getcpuResidual() * iter_server_vec->getmemResidual() * iter_server_vec->getdiskResidual(),&(*iter_server_vec)));
 	}
 
@@ -546,7 +578,7 @@ void initialPolicies(unsigned int _conf_policy)
 	else if (t.quot == 3)
 	{
 		policy.first = "NOVAL";
-		policy.second = novelBalanceVMPlacement;
+		policy.second = novelGreedyVMPlacement;
 		policy_vec.push_back(policy);
 
 		if (t.rem == 1)

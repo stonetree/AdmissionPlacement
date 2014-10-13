@@ -15,6 +15,10 @@ extern double low_arrival_rate;
 extern double hight_arrival_rate;
 extern double xhight_arrival_rate;
 
+extern double low_departure_rate;
+extern double hight_departure_rate;
+extern double xhight_departure_rate;
+
 extern unsigned int total_request;
 extern const unsigned int total_service_type_num;
 extern const double discout_factor;

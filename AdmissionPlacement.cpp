@@ -8,7 +8,7 @@
 #include "common.h"
 #include "cSystemState.h"
 
-unsigned int sample_request_num = 50000;
+unsigned int sample_request_num = 500;
 unsigned int total_request = 100;
 const unsigned int total_server_num = 10;
 const unsigned int total_service_type_num = 3;

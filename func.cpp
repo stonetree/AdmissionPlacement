@@ -831,6 +831,12 @@ void outputResults()
 		{
 			state_value = iter_find_system_state_value_map->second;
 		}
+		else
+		{
+			cout<<"Cannot locate the initial state!!!"<<endl;
+			exit(0);
+		}
+
 		//output_file<<"<"<<iter_request_type_map->first<<","<<state_value<<">"<<endl;
 		output_file<<" "<<state_value;
 		expected_state_value += state_value * iter_request_type_map->second.first;
