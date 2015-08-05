@@ -69,6 +69,7 @@ bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int
 	//First, we will take the servers with the descending order based on their number of  residual resources
 	//Then, also take the VMs that will be deployed with the descending order based on its requirement to the resources
 	//Finally, we try to find enough server to host
+	//In this placement function, the duration of VMs hosted on servers will be considered.
 
 	*_iteration_placement = 0;
 	multimap<double,cServer*> server_index_multimap;
@@ -127,8 +128,8 @@ bool novelBalanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int
 
 bool balanceVMPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration_placement)
 {
-	//This function places VMs with the greedy manner
-	//First, we will take the servers with the descending order based on their number of  residual resources
+	//This function places VMs with the balance manner
+	//First, we will take the servers with the ascending order based on their number of  residual resources
 	//Then, also take the VMs that will be deployed with the descending order based on its requirement to the resources
 	//Finally, we try to find enough server to host
 
@@ -564,6 +565,10 @@ void initialPolicies(unsigned int _conf_policy)
 
 		policy.first = "BALANCE";
 		policy.second = balanceVMPlacement;
+		policy_vec.push_back(policy);
+
+		policy.first = "NBALANCE";
+		policy.second = novelBalanceVMPlacement;
 		policy_vec.push_back(policy);
 
 		if (t.rem == 1)
