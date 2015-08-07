@@ -4,7 +4,7 @@
 /************************************************************************/
 /* In this simulation, we say a data center owner provides three types of services
 also means it provides three types of VMs*/
-/************************************************************************/
+/*************************************************************************/
 
 
 //global variables
