@@ -533,6 +533,7 @@ void initialPolicies(unsigned int _conf_policy)
 		
 		if (t.rem == 1)
 		{
+			admission_placement = 1;
 			policy.first = "NO_PLACEMENT";
 			policy.second = noPlacement;
 			policy_vec.push_back(policy);
@@ -546,6 +547,7 @@ void initialPolicies(unsigned int _conf_policy)
 
 		if (t.rem == 1)
 		{
+			admission_placement = 1;
 			policy.first = "NO_PLACEMENT";
 			policy.second = noPlacement;
 			policy_vec.push_back(policy);
@@ -559,6 +561,7 @@ void initialPolicies(unsigned int _conf_policy)
 
 		if (t.rem == 1)
 		{
+			admission_placement = 1;
 			policy.first = "NO_PLACEMENT";
 			policy.second = noPlacement;
 			policy_vec.push_back(policy);
@@ -580,6 +583,7 @@ void initialPolicies(unsigned int _conf_policy)
 
 		if (t.rem == 1)
 		{
+			admission_placement = 1;
 			mix_solution = 1;
 			policy.first = "NO_PLACEMENT";
 			policy.second = noPlacement;

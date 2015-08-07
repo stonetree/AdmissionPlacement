@@ -29,7 +29,10 @@ extern double workload_rate;
 extern const double epsilon_soft;
 
 extern unsigned int mix_solution;
+extern unsigned int admission_placement;
 extern double total_revenue;
+
+extern bool   exploitation;
 
 extern ID event_id;
 

@@ -453,6 +453,11 @@ static pair<string, pair<double,vector<cServer*>>> choose_policy_epsilon_algorit
 	gsl_rng * r;
 
 	
+	if (admission_placement == 0)
+	{
+		return make_pair(_name_optimal_policy, make_pair(_max_profit, _optimal_deployment));
+	}
+	
 	//If the greedy policy instead of the epsilon policy is chosen,
 	//directly returns 
 	if (mix_solution == 0)
@@ -573,35 +578,40 @@ bool obtainOptimalAction(cEvent* _event,vector<cServer>& _server_vec,
 
 	}//end... for (iter_placement_vec
 
-	chosen_policy = choose_policy_epsilon_algorithm(epsilon_soft, name_optimal_policy, max_profit, optimal_deployment, placement_solution);
-	
-	
-	//For collecting statistic data purpose only.
-	if (chosen_policy.first != "NO_PLACEMENT")
+	//If find one or more solution check how choose the solution
+	if (find_solution)
 	{
-		flag_find_placement = true;
-	}
-	
-	
-	//finally found an optimal placement solution
-	//update the deployment information for each VM belonging to the current request
+		chosen_policy = choose_policy_epsilon_algorithm(epsilon_soft, name_optimal_policy, max_profit, optimal_deployment, placement_solution);
 
-	if (chosen_policy.first != "NO_PLACEMENT")
-	{			
 
-		//The arrived request is accepted.
-		accepted_arriving_request = true;
-
-		request->setAccepted(true);
-		vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
-		vector<cServer*>::iterator iter_optimal_depolyment_vec = chosen_policy.second.second.begin();
-		for (;iter_vm_vec != request->p_vm_vec->end();iter_vm_vec++,iter_optimal_depolyment_vec++)
+		//For collecting statistic data purpose only.
+		if (chosen_policy.first != "NO_PLACEMENT")
 		{
-			iter_vm_vec->setHostedServPoint(*iter_optimal_depolyment_vec);
-			iter_vm_vec->setHostedServID((*iter_optimal_depolyment_vec)->getID());
+			flag_find_placement = true;
 		}
 
+
+		//finally found an optimal placement solution
+		//update the deployment information for each VM belonging to the current request
+
+		if (chosen_policy.first != "NO_PLACEMENT")
+		{
+
+			//The arrived request is accepted.
+			accepted_arriving_request = true;
+
+			request->setAccepted(true);
+			vector<cVirtualMachine>::iterator iter_vm_vec = request->p_vm_vec->begin();
+			vector<cServer*>::iterator iter_optimal_depolyment_vec = chosen_policy.second.second.begin();
+			for (; iter_vm_vec != request->p_vm_vec->end(); iter_vm_vec++, iter_optimal_depolyment_vec++)
+			{
+				iter_vm_vec->setHostedServPoint(*iter_optimal_depolyment_vec);
+				iter_vm_vec->setHostedServID((*iter_optimal_depolyment_vec)->getID());
+			}
+
+		}
 	}
+	
 
 	//If a policy has been found, including "NO_PLACEMENT"
 	//update the value function for current system state
@@ -731,6 +741,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 {
 	multimap<double,cEvent>::iterator iter_event_multimap;
 	counting = -1;
+	unsigned int local_counting = 0;
 
 	//store the number of accepted requests corresponding to each type of requests
 	map<requesttype,unsigned int> hosted_requests_type_num_map;
@@ -742,6 +753,7 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 	
 	for (iter_event_multimap = _event_multimap.begin();iter_event_multimap != _event_multimap.end();iter_event_multimap++)
 	{		
+		//cout << ++local_counting << endl;
 		if (iter_event_multimap->second.getEventType() == DEPARTURE)
 		{
 			//set current time
@@ -792,7 +804,11 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
             if(obtainOptimalAction(&(iter_event_multimap->second),_server_vec,hosted_requests_type_num_map,hosted_request_map))
 			{
 				cRequest* tem_p_request = iter_event_multimap->second.getRequest();
-				total_revenue += tem_p_request->getRequestUnitTimeRevenue() * tem_p_request->getDurationTime();
+				
+				if (exploitation)
+				{
+					total_revenue += tem_p_request->getRequestUnitTimeRevenue() * tem_p_request->getDurationTime();
+				}
 				
 				//if the arriving request is accepted, we should allocate physical resources for it and insert a departure event into the event list
 				tem_p_request->setAccepted(true);
@@ -816,7 +832,11 @@ void obtainOptimalStateValue(multimap<double,cEvent>& _event_multimap,vector<cSe
 			{
 				
 				cRequest* tem_p_request = iter_event_multimap->second.getRequest();
-				total_revenue -= tem_p_request->getRequestUnitTimePenalty() * tem_p_request->getDurationTime();
+				
+				if (exploitation)
+				{
+					total_revenue -= tem_p_request->getRequestUnitTimePenalty() * tem_p_request->getDurationTime();
+				}
 				//do nothing
 				//the arriving request is rejected due to 1) having not enough residual resources, or 2) maximizing profits policy
 				tem_p_request->setAccepted(false);

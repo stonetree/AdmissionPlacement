@@ -22,6 +22,7 @@ const double remote_communication_cost = 0.05;
 const double epsilon_soft = 0.01;
 
 unsigned int mix_solution = 0;
+unsigned int admission_placement = 0;
 
 vector<vector<double>> commu_cost;
 vector<double> basisFuncParameter;
@@ -36,6 +37,7 @@ double accepted_requests_num = 0;
 double allocation_fail_num = 0;
 double average_allocation_fail_rate = 0;
 double total_revenue = 0;
+bool   exploitation = false;
 /************************************************************************/
 
 double workload_rate = 0;
@@ -93,6 +95,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		average_accepted_rate = 0;
 		average_allocation_fail_rate = 0;
 		total_revenue = 0;
+		mix_solution = 0;
+		admission_placement = 0;
 		
 		system_value_map  *p_system_value_map = new system_value_map[total_request + 1];
 		system_policy_map *p_system_policy_map = new system_policy_map[total_request + 1];
@@ -100,9 +104,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		global_point_system_value_map = p_system_value_map;
 		global_point_system_policy_map = p_system_policy_map;
 
+		exploitation = false;
+		
 		//unsigned int sample_index;
 		for (sample_index = 0;sample_index < sample_request_num; sample_index++)
 		{
+			if ((double)sample_index/sample_request_num > 0.9)
+			{
+				exploitation = true;
+			}
+			
 			accepted_requests_num = 0;
 			allocation_fail_num = 0;
 
