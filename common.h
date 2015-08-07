@@ -26,6 +26,11 @@ extern double accepted_requests_num;
 extern unsigned int sample_request_num;
 extern double workload_rate;
 
+extern const double epsilon_soft;
+
+extern unsigned int mix_solution;
+extern double total_revenue;
+
 extern ID event_id;
 
 extern system_value_map  *global_point_system_value_map;

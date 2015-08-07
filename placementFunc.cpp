@@ -12,6 +12,13 @@ bool noPlacement(vector<cServer>& _server_vec,cRequest* _request,int* _iteration
 
 	*_iterationPlacement = 0;
 	_request->setAccepted(false);
+
+	vector<cVirtualMachine>::iterator iter_vm = _request->p_vm_vec->begin();
+	for (; iter_vm != _request->p_vm_vec->end();iter_vm++)
+	{
+		iter_vm->setHostedServPoint(NULL);
+		iter_vm->setHostedServID(0);
+	}
 	return true;
 }
 
@@ -573,6 +580,7 @@ void initialPolicies(unsigned int _conf_policy)
 
 		if (t.rem == 1)
 		{
+			mix_solution = 1;
 			policy.first = "NO_PLACEMENT";
 			policy.second = noPlacement;
 			policy_vec.push_back(policy);

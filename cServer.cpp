@@ -11,7 +11,7 @@ cServer::~cServer(void)
 {
 }
 
-cServer::cServer(ID _id,double _cpu_capacity,double _mem_capacity,double _disk_capacity)
+cServer::cServer(ID _id, resource_unit _cpu_capacity, resource_unit _mem_capacity, resource_unit _disk_capacity)
 {
 	id = _id;
 	cpu_capacity = _cpu_capacity;

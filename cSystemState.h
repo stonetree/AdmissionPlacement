@@ -7,22 +7,22 @@
 class cServerCopy
 {
 private:
-	double cpu_residual;
-	double mem_residual;
-	double disk_residual;
+	resource_unit cpu_residual;
+	resource_unit mem_residual;
+	resource_unit disk_residual;
 public:
-	void setcpuRedisual(double _cpu){cpu_residual = _cpu;}
-	double getcpuResidual(void)const {return cpu_residual;}
+	void setcpuRedisual(resource_unit _cpu){cpu_residual = _cpu;}
+	resource_unit getcpuResidual(void)const { return cpu_residual; }
 
-	void setmemResidual(double _mem){mem_residual = _mem;}
-	double getmemResidual(void)const {return mem_residual;}
+	void setmemResidual(resource_unit _mem){ mem_residual = _mem; }
+	resource_unit getmemResidual(void)const { return mem_residual; }
 
-	void setdiskResidual(double _disk){disk_residual = _disk;}
-	double getdiskResidual(void)const {return disk_residual;}
+	void setdiskResidual(resource_unit _disk){ disk_residual = _disk; }
+	resource_unit getdiskResidual(void)const { return disk_residual; }
 
 
 public:
-	cServerCopy(double _cpu_residual,double _mem_residual,double _disk_residual):cpu_residual(_cpu_residual),mem_residual(_mem_residual),disk_residual(_disk_residual){}
+	cServerCopy(resource_unit _cpu_residual, resource_unit _mem_residual, resource_unit _disk_residual) :cpu_residual(_cpu_residual), mem_residual(_mem_residual), disk_residual(_disk_residual){}
 	cServerCopy(const cServerCopy& _server_copy):cpu_residual(_server_copy.cpu_residual),mem_residual(_server_copy.mem_residual),disk_residual(_server_copy.disk_residual){}
 	cServerCopy(void);
 	~cServerCopy(void);

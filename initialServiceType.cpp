@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "cService.h"
 
+/************************************************************************/
+/* In this simulation, we say a data center owner provides three types of services
+also means it provides three types of VMs*/
+/************************************************************************/
+
+
 //global variables
 extern unsigned int total_request;
 extern const unsigned int total_service_type_num;
@@ -46,17 +52,17 @@ void initialServiceType(map<servicetype,cService*>& _service_map,vector<cService
 	vm_type.clear();
 	vm_type.push_back(serviceLightVM);
 	//_service_vec.push_back(cService(LIGHT,vm_type,service_light_unit_reward,service_light_unit_penalty));
-	_service_vec.push_back(cService(LIGHT,vm_type,service_light_unit_reward * service_light_vm_num,service_light_unit_penalty * service_light_vm_num));
+	_service_vec.push_back(cService(LIGHT,vm_type,service_light_unit_reward,service_light_unit_penalty));
 
 	vm_type.clear();
 	vm_type.push_back(serviceMiddleVM);
 	//_service_vec.push_back(cService(MIDDLE,vm_type,service_middle_unit_reward,service_middle_unit_penalty));
-	_service_vec.push_back(cService(MIDDLE,vm_type,service_middle_unit_reward * service_middle_vm_num,service_middle_unit_penalty * service_middle_vm_num));
+	_service_vec.push_back(cService(MIDDLE,vm_type,service_middle_unit_reward,service_middle_unit_penalty));
 
 	vm_type.clear();
 	vm_type.push_back(serviceHeavyVM);
 	//_service_vec.push_back(cService(HEAVY,vm_type,service_heavy_unit_reward,service_heavy_unit_penalty));
-	_service_vec.push_back(cService(HEAVY,vm_type,service_heavy_unit_reward * service_heavy_vm_num,service_heavy_unit_penalty * service_heavy_vm_num));
+	_service_vec.push_back(cService(HEAVY,vm_type,service_heavy_unit_reward,service_heavy_unit_penalty));
 	
 	for (iter_service_vec = _service_vec.begin();iter_service_vec != _service_vec.end();iter_service_vec++)
 	{

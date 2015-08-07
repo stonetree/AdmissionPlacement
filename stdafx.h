@@ -30,5 +30,7 @@ enum eventtype{ARRIVAL,DEPARTURE};
 
 enum requesttype{LOW,HIGHT,XHIGHT,NONE};
 
+typedef  unsigned int resource_unit;
+
 using namespace std;
 

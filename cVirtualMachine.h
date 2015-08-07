@@ -35,7 +35,8 @@ public:
 public:
 	cVirtualMachine(void);
 	cVirtualMachine(ID _id,ID _hostServerID,ID _request_id,cServer* _p_hosted_server,cRequest* _p_request,VMtype _type,\
-		double _cpu_required,double _mem_required,double _disk_required):cBaseVM(_type,_cpu_required,_mem_required, _disk_required){id = _id;\
+		resource_unit _cpu_required, resource_unit _mem_required, resource_unit _disk_required) :cBaseVM(_type, _cpu_required, _mem_required, _disk_required){
+		id = _id; \
 		hosted_server_id = _hostServerID;request_id = _request_id; p_hosted_server = _p_hosted_server; p_request = _p_request;}
 	cVirtualMachine(ID _id,ID _hostServerID,ID _request_id,cServer* _p_hosted_server,cRequest* _p_request,VMtype _type,\
 		const cBaseVM& _base_vm_type):cBaseVM(_base_vm_type){id = _id;hosted_server_id = _hostServerID;request_id = _request_id; \

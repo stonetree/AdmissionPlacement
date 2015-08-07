@@ -19,6 +19,10 @@ const double local_communication_cost = 0.01;
 const double tor_communication_cost = 0.02;
 const double remote_communication_cost = 0.05;
 
+const double epsilon_soft = 0.01;
+
+unsigned int mix_solution = 0;
+
 vector<vector<double>> commu_cost;
 vector<double> basisFuncParameter;
 
@@ -31,6 +35,7 @@ double average_accepted_rate = 0;
 double accepted_requests_num = 0;
 double allocation_fail_num = 0;
 double average_allocation_fail_rate = 0;
+double total_revenue = 0;
 /************************************************************************/
 
 double workload_rate = 0;
@@ -45,6 +50,8 @@ system_policy_map system_state_policy_map;
 
 system_value_map  *global_point_system_value_map = NULL;
 system_policy_map *global_point_system_policy_map = NULL;
+
+
 
 unsigned int sample_index = 0;
 
@@ -85,6 +92,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		average_accepted_rate = 0;
 		average_allocation_fail_rate = 0;
+		total_revenue = 0;
 		
 		system_value_map  *p_system_value_map = new system_value_map[total_request + 1];
 		system_policy_map *p_system_policy_map = new system_policy_map[total_request + 1];

@@ -17,6 +17,8 @@ private:
 	double start_time;
 	double duration_time;
 	double departure_time;
+	double request_unit_time_revenue;
+	double request_unit_time_penalty;
 
 
 public:
@@ -50,6 +52,12 @@ public:
 
 	void   serRequestType(requesttype _request_type){request_type = _request_type;}
 	requesttype getRequestType(void) const {return request_type;}
+
+	void   setRequestUnitTimeRevenue(double _revenue){ request_unit_time_revenue = _revenue; }
+	double getRequestUnitTimeRevenue(void){ return request_unit_time_revenue; }
+
+	void   setRequestUnitTimePenalty(double _penalty){ request_unit_time_penalty = _penalty; }
+	double getRequestUnitTimePenalty(void){ return request_unit_time_penalty; }
 
 
 public:

@@ -11,7 +11,7 @@ cBaseVM::~cBaseVM(void)
 {
 }
 
-cBaseVM::cBaseVM(VMtype _type,double _cpu_required,double _mem_required,double _disk_required)
+cBaseVM::cBaseVM(VMtype _type, resource_unit _cpu_required, resource_unit _mem_required, resource_unit _disk_required)
 {
 	type = _type;
 	cpu_required = _cpu_required;

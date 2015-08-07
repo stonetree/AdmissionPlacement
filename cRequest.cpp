@@ -20,6 +20,9 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 	service_type = _service_type;
 	request_type = _request_type;
 
+	request_unit_time_revenue = 0;
+	request_unit_time_penalty = 0;
+
 	map<VMtype,int>::const_iterator const_iter_vm_type;
 	map<VMtype,cBaseVM>::const_iterator const_find_vm_type;
 	map<servicetype,cService*>::const_iterator const_find_service_type;
@@ -51,6 +54,8 @@ cRequest::cRequest(ID _id, double _lambda,double _mu,double _start_time,double _
 					cout<<"Error!! There is no vm type existing!"<<endl;
 					exit(0);
 				}
+				request_unit_time_revenue += const_find_service_type->second->getUnitReward();
+				request_unit_time_penalty += const_find_service_type->second->getUnitPenalty();
 				//p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
 				p_vm_vec->push_back(cVirtualMachine(id,0,0,NULL,NULL,const_find_vm_type->first,const_find_vm_type->second));
 			}
@@ -76,6 +81,8 @@ cRequest& cRequest::operator=(const cRequest& _requ)
 		departure_time = _requ.departure_time;
 		service_type = _requ.service_type;
 		request_type = _requ.request_type;
+		request_unit_time_revenue = _requ.request_unit_time_revenue;
+		request_unit_time_penalty = _requ.request_unit_time_penalty;
 
 		this->p_vm_vec = new vector<cVirtualMachine>;
 		this->p_vm_vec->clear();

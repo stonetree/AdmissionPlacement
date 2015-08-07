@@ -3,9 +3,9 @@
 #include "common.h"
 
 
-static const double server_cpu_capacity = 10;
-static const double server_mem_capacity = 0;
-static const double server_disk_capacity = 0;
+static const resource_unit server_cpu_capacity = 10;
+static const resource_unit server_mem_capacity = 0;
+static const resource_unit server_disk_capacity = 0;
 
 void initialPhyServers(vector<cServer>& _server_vec)
 {
